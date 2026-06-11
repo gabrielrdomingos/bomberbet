@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BomberBET — Bolão Copa 2026</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a6b3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BomberBET">
+<link rel="apple-touch-icon" href="logo_192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── reset & tokens ──────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1a6b3a;--green-d:#134f2b;--green-s:#e8f5ee;
+  --gold:#c8922a;--gold-s:#fdf3e3;
+  --red:#c0392b;--red-s:#fdecea;
+  --text:#1a1a1a;--t2:#555;--t3:#999;
+  --line:#e0e0e0;--bg:#f5f5f5;--white:#fff;
+  --r:6px;--sh:0 1px 3px rgba(0,0,0,.08);
+}
+html{font-size:16px}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+
+/* ── tipografia ──────────────────────────────────────────────── */
+h1{font-size:1.4rem;font-weight:700;line-height:1.2}
+h2{font-size:1.05rem;font-weight:600}
+h3{font-size:.9rem;font-weight:600}
+
+/* ── layout ──────────────────────────────────────────────────── */
+.wrap{max-width:680px;margin:0 auto;padding:0 1rem}
+.page{padding:1.25rem 1rem 4rem;max-width:680px;margin:0 auto}
+.ph{margin-bottom:1.25rem}
+.ph p{color:var(--t2);font-size:.875rem;margin-top:.2rem}
+
+/* ── navbar ──────────────────────────────────────────────────── */
+#navbar{background:var(--green);position:sticky;top:0;z-index:100;display:none}
+.nb-inner{max-width:680px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;gap:.5rem}
+.nb-brand{font-weight:700;font-size:.95rem;color:#fff;text-decoration:none;white-space:nowrap}
+.nb-nav{display:flex;gap:.15rem;list-style:none;flex-wrap:wrap}
+.nb-nav a{color:rgba(255,255,255,.75);text-decoration:none;font-size:.8rem;padding:.3rem .5rem;border-radius:4px;transition:background .15s,color .15s;cursor:pointer}
+.nb-nav a:hover,.nb-nav a.active{background:rgba(255,255,255,.15);color:#fff}
+.nb-nav a.adm{color:#f0c060}
+
+/* ── card ────────────────────────────────────────────────────── */
+.card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:1rem;box-shadow:var(--sh)}
+.card+.card{margin-top:.75rem}
+.ctitle{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:.75rem}
+
+/* ── section ─────────────────────────────────────────────────── */
+.sec{margin-bottom:1.75rem}
+.stitle{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin-bottom:.65rem;padding-bottom:.4rem;border-bottom:1px solid var(--line)}
+
+/* ── form ────────────────────────────────────────────────────── */
+.fg{margin-bottom:.875rem}
+.fl{display:block;font-size:.78rem;font-weight:600;margin-bottom:.3rem;color:var(--t2)}
+.fi{width:100%;padding:.55rem .7rem;border:1.5px solid var(--line);border-radius:var(--r);font-size:.9rem;color:var(--text);background:var(--white);outline:none;transition:border-color .15s;font-family:inherit}
+.fi:focus{border-color:var(--green)}
+select.fi{cursor:pointer}
+
+/* ── botões ──────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.55rem 1.1rem;border-radius:var(--r);font-size:.85rem;font-weight:600;cursor:pointer;border:none;transition:opacity .15s,background .15s;text-decoration:none;font-family:inherit}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-p{background:var(--green);color:#fff}
+.btn-p:hover:not(:disabled){background:var(--green-d)}
+.btn-s{background:var(--white);color:var(--text);border:1.5px solid var(--line)}
+.btn-s:hover:not(:disabled){border-color:var(--green);color:var(--green)}
+.btn-d{background:var(--red);color:#fff}
+.btn-d:hover:not(:disabled){opacity:.85}
+.btn-sm{padding:.3rem .65rem;font-size:.78rem}
+.btn-w{width:100%}
+
+/* ── jogo row ────────────────────────────────────────────────── */
+.mrow{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.4rem;padding:.75rem 0;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:none}
+.mteam{font-size:.875rem;font-weight:500}
+.mteam.h{text-align:right}
+.mteam.a{text-align:left}
+.mscore{display:flex;align-items:center;gap:.3rem;font-size:1rem;font-weight:700;color:var(--green);white-space:nowrap;justify-content:center}
+.mscore .x{color:var(--t3);font-weight:400}
+.mscore.pend{color:var(--t3);font-weight:400;font-size:.82rem}
+.minfo{font-size:.7rem;color:var(--t3);text-align:center}
+
+/* ── palpite input ───────────────────────────────────────────── */
+.prow{padding:.875rem 0;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:none}
+.prow-main{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.5rem}
+.pteam{font-size:.875rem;font-weight:500}
+.pteam.h{text-align:right}
+.pteam.a{text-align:left}
+.pinputs{display:flex;align-items:center;gap:.3rem;justify-content:center}
+.si{width:2.4rem;height:2.4rem;border:1.5px solid var(--line);border-radius:var(--r);text-align:center;font-size:1.05rem;font-weight:700;color:var(--text);background:var(--white);outline:none;transition:border-color .15s;-moz-appearance:textfield;font-family:inherit}
+.si::-webkit-outer-spin-button,.si::-webkit-inner-spin-button{-webkit-appearance:none}
+.si:focus{border-color:var(--green)}
+.si.saved{border-color:var(--green);background:var(--green-s)}
+.psep{color:var(--t3)}
+.qrow{margin-top:.5rem}
+.qsel{width:100%;padding:.38rem .6rem;border:1.5px solid var(--line);border-radius:var(--r);font-size:.82rem;background:var(--white);color:var(--text);outline:none;cursor:pointer;font-family:inherit}
+.qsel:focus{border-color:var(--green)}
+.pstatus{font-size:.72rem;text-align:center;margin-top:.3rem}
+.pstatus.ok{color:var(--green)}
+.pstatus.err{color:var(--red)}
+.pstatus.exp{color:var(--t3)}
+
+/* ── ranking ─────────────────────────────────────────────────── */
+.rtab-bar{display:flex;gap:.25rem;margin-bottom:1rem;background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:.25rem}
+.rtab{flex:1;padding:.4rem;border-radius:4px;border:none;background:transparent;font-size:.8rem;font-weight:600;color:var(--t2);cursor:pointer;transition:background .15s,color .15s;font-family:inherit}
+.rtab.active{background:var(--green);color:#fff}
+.rtable{width:100%;border-collapse:collapse;font-size:.875rem}
+.rtable th{text-align:left;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);padding:.45rem .4rem .45rem 0;border-bottom:1px solid var(--line)}
+.rtable td{padding:.6rem .4rem .6rem 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.rtable tr:last-child td{border-bottom:none}
+.rtable tr.me td{background:var(--green-s)}
+.rpos{font-weight:700;color:var(--t3);min-width:1.5rem}
+.rpos.p1{color:var(--gold)}
+.rpos.p2,.rpos.p3{color:var(--t2)}
+.rpts{font-weight:700;text-align:right;color:var(--green)}
+
+/* ── mercado ─────────────────────────────────────────────────── */
+.bbar{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:.7rem 1rem;margin-bottom:1.25rem}
+.bval{font-size:1.3rem;font-weight:700;color:var(--green)}
+.blabel{font-size:.75rem;color:var(--t3)}
+.shelf-hd{display:flex;align-items:center;gap:.5rem;margin:1rem 0 .6rem}
+.shelf-badge{font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:3px;text-transform:uppercase;letter-spacing:.06em}
+.sS{background:#fef9e7;color:#b7950b}
+.sA{background:#eaf4fb;color:#1a6fa0}
+.sB{background:#f4f6f7;color:#555}
+.sC{background:var(--green-s);color:var(--green)}
+.tcard{display:flex;align-items:center;justify-content:space-between;padding:.575rem .75rem;border:1.5px solid var(--line);border-radius:var(--r);margin-bottom:.4rem;cursor:pointer;transition:border-color .15s,background .15s;user-select:none}
+.tcard:hover{border-color:var(--green);background:var(--green-s)}
+.tcard.sel{border-color:var(--green);background:var(--green-s)}
+.tcard.elim{opacity:.35;pointer-events:none}
+.tcard.bought{border-color:var(--green);background:var(--green-s);pointer-events:none}
+.tname{font-size:.875rem;font-weight:500}
+.tprice{font-size:.85rem;font-weight:700;color:var(--green)}
+.tprice small{font-size:.7rem;font-weight:400;color:var(--t3)}
+
+/* ── calendário ──────────────────────────────────────────────── */
+.day-hd{font-size:.78rem;font-weight:600;color:var(--t2);padding:.5rem 0 .3rem;text-transform:capitalize}
+.phase-hd{font-size:.8rem;font-weight:700;color:var(--green);padding:.75rem 0 .4rem;border-top:2px solid var(--green-s);margin-top:.5rem}
+.phase-hd:first-child{border-top:none;margin-top:0}
+
+/* ── badges ──────────────────────────────────────────────────── */
+.badge{display:inline-block;padding:.18rem .45rem;border-radius:3px;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.bg{background:var(--green-s);color:var(--green)}
+.bo{background:var(--gold-s);color:var(--gold)}
+.br{background:var(--red-s);color:var(--red)}
+.bx{background:#f0f0f0;color:var(--t3)}
+
+/* ── login ───────────────────────────────────────────────────── */
+#view-login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem}
+.login-box{width:100%;max-width:340px}
+.login-hd{text-align:center;margin-bottom:1.75rem}
+.login-hd .ico{font-size:2.25rem;display:block;margin-bottom:.4rem}
+.login-hd h1{font-size:1.2rem}
+.login-hd p{color:var(--t2);font-size:.85rem;margin-top:.2rem}
+.err-box{color:var(--red);font-size:.82rem;padding:.45rem .7rem;background:var(--red-s);border-radius:var(--r);margin-bottom:.75rem}
+
+/* ── dashboard mini ranking ──────────────────────────────────── */
+.rmini{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:1.5rem}
+.rbox{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:.75rem;text-align:center;box-shadow:var(--sh)}
+.rbox .rl{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);display:block;margin-bottom:.25rem}
+.rbox .rn{font-size:1.4rem;font-weight:700;color:var(--green);display:block;line-height:1}
+.rbox .rp{font-size:.72rem;color:var(--t3);margin-top:.15rem}
+
+/* ── toast ───────────────────────────────────────────────────── */
+#toasts{position:fixed;bottom:1.25rem;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.toast{background:var(--text);color:#fff;padding:.6rem 1rem;border-radius:var(--r);font-size:.85rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;transform:translateY(6px);transition:opacity .2s,transform .2s;pointer-events:auto;max-width:300px;text-align:center}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.tok{background:var(--green)}
+.toast.terr{background:var(--red)}
+
+/* ── loading & empty ─────────────────────────────────────────── */
+.lp{display:flex;align-items:center;justify-content:center;min-height:50vh;gap:.65rem;color:var(--t3);font-size:.875rem}
+.spin{width:1.15rem;height:1.15rem;border:2px solid var(--line);border-top-color:var(--green);border-radius:50%;animation:sp .6s linear infinite;display:inline-block}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:2rem 1rem;color:var(--t3);font-size:.875rem}
+
+/* ── utils ───────────────────────────────────────────────────── */
+.tc{text-align:center}.tr{text-align:right}.hidden{display:none!important}
+.mt1{margin-top:.5rem}.mt2{margin-top:1rem}.mb1{margin-bottom:.5rem}.mb2{margin-bottom:1rem}
+.flex{display:flex}.fb{display:flex;justify-content:space-between;align-items:center}
+.gap1{gap:.5rem}.small{font-size:.8rem}.muted{color:var(--t3);font-size:.82rem}
+
+@media(max-width:480px){
+  .nb-nav a{padding:.25rem .35rem;font-size:.75rem}
+  h1{font-size:1.2rem}
+  .rmini{gap:.5rem}
+}
+
+/* ── modal ───────────────────────────────────────────────────── */
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;margin:0;padding:0}
+.modal-bg.hidden{display:none!important}
+.modal{background:var(--white);border-radius:12px 12px 0 0;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;border-bottom:1px solid var(--line);flex-shrink:0}
+.modal-hd h2{font-size:1rem;font-weight:700}
+.modal-close{background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--t3);line-height:1;padding:.25rem;border-radius:4px}
+.modal-close:hover{color:var(--text);background:var(--bg)}
+.modal-body{overflow-y:auto;padding:.75rem 1rem 2rem;flex:1}
+.modal-sub{font-size:.75rem;color:var(--t3);margin-bottom:.25rem}
+.locked .si{background:var(--bg);color:var(--t3);border-color:var(--line);cursor:not-allowed}
+.locked .qsel{background:var(--bg);color:var(--t3);cursor:not-allowed}
+.pick-locked-msg{font-size:.72rem;color:var(--t3);text-align:center;margin-top:.25rem}
+</style>
+</head>
+<body>
+
+<!-- pre-load nav stub so onclick doesn't fail before module loads -->
+<script>
+window._navQueue = []
+window.nav = function(r){ window.location.hash = r }
+window.signOut = function(){ window.nav('login') }
+window.openPicksModal = function(){ /* stub — aguarda módulo carregar */ setTimeout(()=>{ if(window._openPicksReady) window._openPicksReady(); },100) }
+window.closePicksModal = function(){ document.getElementById('modal-picks')?.classList.add('hidden'); document.body.style.overflow='' }
+window.closePicks = function(e){ if(e.target.id==='modal-picks') window.closePicksModal() }
+</script>
+<!-- navbar -->
+<nav id="navbar" style="display:none">
+  <div class="nb-inner">
+    <a class="nb-brand" onclick="nav('dashboard')">⚽ Bolão 2026</a>
+    <ul class="nb-nav" id="nb-links"></ul>
+  </div>
+</nav>
+
+<!-- views -->
+<div id="view-login" class="hidden"></div>
+<div id="view-app"  class="hidden">
+  <div class="page" id="app-content"></div>
+</div>
+
+<!-- toasts -->
+<div id="toasts"></div>
+
+<!-- palpites modal -->
+<div class="modal-bg hidden" id="modal-picks" onclick="closePicks(event)">
+  <div class="modal" id="modal-picks-inner">
+    <div class="modal-hd">
+      <div>
+        <h2>Palpites</h2>
+        <div class="modal-sub" id="modal-picks-sub">Prazo: 23h59 do dia anterior ao jogo</div>
+      </div>
+      <button class="modal-close" onclick="closePicksModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-picks-body">
+      <div class="lp"><span class="spin"></span> Carregando...</div>
+    </div>
+  </div>
+</div>
+
+
+<script type="module" id="main-script">
+// ════════════════════════════════════════════════════════════════
+// CONFIGURAÇÃO — substitua pelos seus valores
+// ════════════════════════════════════════════════════════════════
+const SUPABASE_URL  = 'https://kenwpoguuquiiqfjtfjw.supabase.co'
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imtlbndwb2d1dXF1aWlxZmp0Zmp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMzM3NzgsImV4cCI6MjA5NjcwOTc3OH0.YzsABhzNMreRUNnBENwcPMTQt2IfB25v9_bncJqTnjs'
+
+// ════════════════════════════════════════════════════════════════
+// SUPABASE CLIENT
+// ════════════════════════════════════════════════════════════════
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON)
+
+// ════════════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ════════════════════════════════════════════════════════════════
+let SESSION = null
+let PROFILE = null
+
+// ════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════
+function toast(msg, type='', dur=3000) {
+  const el = document.createElement('div')
+  el.className = `toast ${type}`
+  el.textContent = msg
+  document.getElementById('toasts').appendChild(el)
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')))
+  setTimeout(() => { el.classList.remove('show'); setTimeout(()=>el.remove(),300) }, dur)
+}
+const ok  = m => toast(m,'tok')
+const err = m => toast(m,'terr',4000)
+
+// ════════════════════════════════════════════════════════════════
+// DATAS
+// ════════════════════════════════════════════════════════════════
+const TZ = 'America/Sao_Paulo'
+const fmtTime = iso => new Date(iso).toLocaleTimeString('pt-BR',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})
+const fmtDate = iso => new Date(iso).toLocaleDateString('pt-BR',{timeZone:TZ,day:'2-digit',month:'2-digit'})
+const fmtDayFull = iso => { const s = new Date(iso).toLocaleDateString('pt-BR',{timeZone:TZ,weekday:'long',day:'2-digit',month:'long'}); return s.replace(/ De /g,' de ').replace(/^(\w)/, m => m.toUpperCase()) }
+const todayStr  = () => new Date().toLocaleDateString('sv-SE',{timeZone:TZ})
+// flag image from country code (flagcdn.com — works on all OS including Windows)
+const _flagMap = {
+  // football codes -> ISO 3166-1 alpha-2
+  ENG:'gb-eng',SCO:'gb-sct',WAL:'gb-wls',NIR:'gb-nir',
+  KOR:'kr',IRN:'ir',KSA:'sa',UAE:'ae',COD:'cd',CPV:'cv',
+  CUW:'cw',PAR:'py',URU:'uy',COL:'co',ECU:'ec',ARG:'ar',
+  BRA:'br',MEX:'mx',PAN:'pa',HAI:'ht',NZL:'nz',RSA:'za',
+  MAR:'ma',TUN:'tn',SEN:'sn',GHA:'gh',CIV:'ci',ALG:'dz',
+  EGY:'eg',COD:'cd',UZB:'uz',QAT:'qa',JOR:'jo',BIH:'ba',
+  NED:'nl',GER:'de',BEL:'be',ESP:'es',FRA:'fr',POR:'pt',
+  ITA:'it',CRO:'hr',DEN:'dk',NOR:'no',SWE:'se',SUI:'ch',
+  AUT:'at',CZE:'cz',SCT:'gb-sct',TUR:'tr',POL:'pl',
+  SRB:'rs',HUN:'hu',GRE:'gr',SVK:'sk',SVN:'si',ROU:'ro',
+  UKR:'ua',RUS:'ru',AUS:'au',JPN:'jp',CHN:'cn',IRQ:'iq',
+  USA:'us',CAN:'ca',GBR:'gb',KEN:'ke',NGA:'ng',CMR:'cm',
+  MLI:'ml',TAN:'tz',UGA:'ug',ZAM:'zm',ANG:'ao',MOZ:'mz',
+}
+function flag(code, size=20) {
+  if (!code) return ''
+  const cc = code.toUpperCase()
+  const iso = _flagMap[cc] ?? cc.toLowerCase()
+  return `<img src="https://flagcdn.com/w${size}/${iso}.png" width="${size}" height="${Math.round(size*0.75)}" style="vertical-align:middle;border-radius:2px" alt="${code}" onerror="this.style.display='none'">`
+}
+const tomorrow  = () => { const d = new Date(); d.setDate(d.getDate()+1); return d.toLocaleDateString('sv-SE',{timeZone:TZ}) }
+const expired  = iso => new Date(iso) < new Date()
+
+// ════════════════════════════════════════════════════════════════
+// ROTEADOR
+// ════════════════════════════════════════════════════════════════
+const ROUTES = {
+  login:     renderLogin,
+  dashboard: renderDashboard,
+  palpites:  renderPalpites,
+  mercado:   renderMercado,
+  rankings:  renderRankings,
+  jogos:     renderJogos,
+  regras:    renderRegras,
+  admin:     renderAdmin,
+}
+
+function nav(route) {
+  window.location.hash = route
+}
+window.nav = nav
+
+async function router() {
+  const hash = window.location.hash.replace('#','') || 'dashboard'
+
+  // auth check
+  const { data: { session } } = await sb.auth.getSession()
+  SESSION = session
+
+  if (!session && hash !== 'login') { nav('login'); return }
+  if (session && hash === 'login')  { nav('dashboard'); return }
+
+  if (session && !PROFILE) {
+    const { data } = await sb.from('profiles').select('*').eq('id',session.user.id).single()
+    PROFILE = data
+  }
+
+  // admin guard
+  if (hash === 'admin' && !PROFILE?.is_admin) { nav('dashboard'); return }
+
+  // mostrar estrutura correta
+  if (hash === 'login') {
+    document.getElementById('navbar').style.display    = 'none'
+    document.getElementById('view-login').classList.remove('hidden')
+    document.getElementById('view-app').classList.add('hidden')
+  } else {
+    document.getElementById('navbar').style.display    = 'block'
+    document.getElementById('view-login').classList.add('hidden')
+    document.getElementById('view-app').classList.remove('hidden')
+    renderNavbar(hash)
+  }
+
+  const fn = ROUTES[hash]
+  if (fn) await fn()
+}
+
+window.addEventListener('hashchange', router)
+router()
+
+// ════════════════════════════════════════════════════════════════
+// NAVBAR
+// ════════════════════════════════════════════════════════════════
+function renderNavbar(active) {
+  const links = [
+    {r:'dashboard', label:'Início'},
+    {r:'palpites',  label:'Palpites'},
+    {r:'mercado',   label:'Mercado'},
+    {r:'rankings',  label:'Rankings'},
+    {r:'jogos',     label:'Jogos'},
+    {r:'regras',    label:'Regras'},
+    ...(PROFILE?.is_admin ? [{r:'admin',label:'Admin',adm:true}] : []),
+    {r:'_signout',  label:'Sair'},
+  ]
+  document.getElementById('nb-links').innerHTML = links.map(l => `
+    <li><a class="${active===l.r?'active':''} ${l.adm?'adm':''}"
+           onclick="${l.r==='_signout'?'signOut()':'nav(\''+l.r+'\')'}">${l.label}</a></li>
+  `).join('')
+}
+
+window.signOut = async function signOut() {
+  await sb.auth.signOut()
+  SESSION = null; PROFILE = null
+  nav('login')
+}
+
+// ════════════════════════════════════════════════════════════════
+// HELPERS DE RENDERIZAÇÃO
+// ════════════════════════════════════════════════════════════════
+function setContent(html) {
+  document.getElementById('app-content').innerHTML = html
+}
+
+function loading() {
+  setContent('<div class="lp"><span class="spin"></span> Carregando...</div>')
+}
+
+function teamName(m, side, withFlag=true) {
+  const t = side === 'home' ? m.home_team : m.away_team
+  const ph = side === 'home' ? m.placeholder_home : m.placeholder_away
+  const name = t?.name ?? ph ?? '?'
+  if (!withFlag || !t?.code) return name
+  return flag(t.code) + ' ' + name
+}
+
+function matchScoreHtml(m) {
+  if (m.status === 'finished')
+    return `<div class="mscore">${m.home_score}<span class="x">×</span>${m.away_score}</div>`
+  if (m.home_score != null && m.away_score != null)
+    return `<div class="mscore" style="color:var(--gold)">${m.home_score}<span class="x" style="color:var(--t3)">×</span>${m.away_score}</div>`
+  return `<div class="mscore pend">${fmtTime(m.kickoff_at)}</div>`
+}
+
+// ════════════════════════════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════════════════════════════
+function renderLogin() {
+  document.getElementById('view-login').innerHTML = `
+    <div class="login-box">
+      <div class="login-hd">
+        <span class="ico">⚽</span>
+        <h1>Bolão Copa 2026</h1>
+        <p>Entre com sua conta para palpitar</p>
+      </div>
+      <div class="card">
+        <div id="lerr" class="err-box hidden"></div>
+        <div class="fg">
+          <label class="fl">E-mail</label>
+          <input class="fi" type="email" id="l-email" placeholder="seu@email.com" autocomplete="email">
+        </div>
+        <div class="fg">
+          <label class="fl">Senha</label>
+          <input class="fi" type="password" id="l-pw" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn btn-p btn-w" id="l-btn" onclick="doLogin()">Entrar</button>
+      </div>
+      <p class="muted tc" style="margin-top:.75rem">Não tem conta? Fale com o administrador.</p>
+    </div>
+  `
+  document.getElementById('l-pw').addEventListener('keydown', e => { if(e.key==='Enter') doLogin() })
+}
+
+window.doLogin = async function() {
+  const btn   = document.getElementById('l-btn')
+  const errEl = document.getElementById('lerr')
+  const email = document.getElementById('l-email').value.trim()
+  const pw    = document.getElementById('l-pw').value
+  btn.disabled = true; btn.textContent = 'Entrando...'
+  errEl.classList.add('hidden')
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw })
+  if (error) {
+    errEl.textContent = 'E-mail ou senha incorretos.'
+    errEl.classList.remove('hidden')
+    btn.disabled = false; btn.textContent = 'Entrar'
+    return
+  }
+  const { data: { session } } = await sb.auth.getSession()
+  SESSION = session
+  const { data } = await sb.from('profiles').select('*').eq('id',session.user.id).single()
+  PROFILE = data
+  nav('dashboard')
+}
+
+// ════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════════════════
+async function renderDashboard() {
+  loading()
+  const today = todayStr()
+  const now   = new Date()
+
+  const [
+    { data: ro },
+    { data: rpArr },
+    { data: rdArr },
+    { data: matches },
+    { data: phase },
+    { data: profiles },
+  ] = await Promise.all([
+    sb.from('ranking_overall').select('points,position').eq('user_id',SESSION.user.id).limit(1),
+    sb.from('ranking_phase').select('points,position').eq('user_id',SESSION.user.id).eq('is_final',false).order('phase_id',{ascending:false}).limit(1),
+    sb.from('ranking_daily').select('points,position').eq('user_id',SESSION.user.id).eq('day',today).limit(1),
+    sb.from('matches').select('id,kickoff_at,picks_close_at,status,home_score,away_score,placeholder_home,placeholder_away,home_team:home_team_id(name,code),away_team:away_team_id(name,code)')
+      .gte('kickoff_at',`${today}T03:00:00Z`).lt('kickoff_at',`${tomorrow()}T03:00:00Z`).order('kickoff_at'),
+    sb.from('phases').select('id,name').eq('status','active').limit(1),
+    sb.from('profiles').select('id,display_name'),
+  ])
+
+  const ro2  = Array.isArray(ro) ? ro?.[0] : ro
+  const phase2 = Array.isArray(phase) ? phase?.[0] : phase
+  const rp = rpArr?.[0]; const rd = rdArr?.[0]
+  const profileMap = Object.fromEntries((profiles??[]).map(p=>[p.id, p.display_name]))
+
+  // busca meus palpites
+  let myPicks = []
+  // busca todos os palpites dos jogos de hoje (para mostrar após prazo)
+  let allPicks = []
+  if (matches?.length) {
+    const ids = matches.map(m=>m.id)
+    const [{ data: mine }, { data: all }] = await Promise.all([
+      sb.from('match_picks').select('match_id,home_score,away_score').eq('user_id',SESSION.user.id).in('match_id',ids),
+      sb.from('match_picks').select('match_id,home_score,away_score,user_id').in('match_id',ids),
+    ])
+    myPicks = mine ?? []
+    allPicks = all ?? []
+  }
+  const pm = Object.fromEntries(myPicks.map(p=>[p.match_id,p]))
+
+  // agrupa todos os palpites por match_id
+  const allPicksMap = {}
+  for (const p of allPicks) {
+    ;(allPicksMap[p.match_id] = allPicksMap[p.match_id]||[]).push(p)
+  }
+
+  const pos = p => p ? `${p}º` : '—'
+
+  const matchesHtml = !matches?.length
+    ? '<div class="empty">Sem jogos hoje.</div>'
+    : matches.map(m => {
+        const pick       = pm[m.id]
+        const prazoFechou = new Date(m.picks_close_at) <= now
+        const fin        = m.status === 'finished'
+
+        // meu palpite
+        let pickInfo = ''
+        if (fin) {
+          pickInfo = pick
+            ? `<div class="pstatus ok">Meu palpite: ${pick.home_score} × ${pick.away_score}</div>`
+            : `<div class="pstatus err">Sem palpite</div>`
+        } else {
+          pickInfo = pick
+            ? `<div class="pstatus ok">Meu palpite: ${pick.home_score} × ${pick.away_score}</div>`
+            : `<div class="pstatus" style="color:var(--t3);font-size:.72rem;text-align:center;margin-top:.25rem">Sem palpite</div>`
+        }
+
+        // palpites de todos (só após prazo fechar)
+        let allPicksHtml = ''
+        if (prazoFechou && allPicksMap[m.id]?.length) {
+          const rows = allPicksMap[m.id]
+            .sort((a,b) => {
+              // meu palpite primeiro
+              if (a.user_id === SESSION.user.id) return -1
+              if (b.user_id === SESSION.user.id) return 1
+              return (profileMap[a.user_id]??'').localeCompare(profileMap[b.user_id]??'')
+            })
+            .map(p => {
+              const isMe = p.user_id === SESSION.user.id
+              const name = isMe ? 'Você' : (profileMap[p.user_id] ?? '?')
+              // verifica acerto
+              let pts = ''
+              if (fin) {
+                const acertouPlacar  = p.home_score === m.home_score && p.away_score === m.away_score
+                const realOutcome    = m.home_score > m.away_score ? 'h' : m.away_score > m.home_score ? 'a' : 'd'
+                const pickOutcome    = p.home_score > p.away_score ? 'h' : p.away_score > p.home_score ? 'a' : 'd'
+                const acertouVencedor = pickOutcome === realOutcome
+                if (acertouPlacar)        pts = `<span class="badge bg" style="font-size:.6rem">+15</span>`
+                else if (acertouVencedor) pts = `<span class="badge bo" style="font-size:.6rem">+3</span>`
+                else                      pts = `<span class="badge bx" style="font-size:.6rem">0</span>`
+              }
+              return `<div style="display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;border-bottom:1px solid var(--line)">
+                <span style="font-size:.78rem;font-weight:${isMe?'600':'400'}">${name}</span>
+                <div style="display:flex;align-items:center;gap:.4rem">
+                  <span style="font-size:.78rem;font-weight:600">${p.home_score} × ${p.away_score}</span>
+                  ${pts}
+                </div>
+              </div>`
+            }).join('')
+          allPicksHtml = `
+            <div style="margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--line)">
+              <div style="font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);margin-bottom:.35rem">Palpites</div>
+              ${rows}
+            </div>`
+        }
+
+        return `
+          <div class="mrow" style="display:block;padding:.875rem 0">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
+              <span class="muted small">${fmtTime(m.kickoff_at)}</span>
+              ${fin ? '<span class="badge bg" style="font-size:.65rem">Finalizado ✓</span>' : prazoFechou ? '<span class="badge bo" style="font-size:.65rem">Em andamento</span>' : '<span class="badge bx" style="font-size:.65rem">Em breve</span>'}
+            </div>
+            <div class="mrow" style="padding:0;border:none">
+              <div class="mteam h">${teamName(m,'home')}</div>
+              ${matchScoreHtml(m)}
+              <div class="mteam a">${teamName(m,'away')}</div>
+            </div>
+            ${pickInfo}
+            ${allPicksHtml}
+          </div>
+        `
+      }).join('')
+
+  setContent(`
+    <div class="ph">
+      <h1>Olá, ${PROFILE.display_name.split(' ')[0]} 👋</h1>
+      ${phase2 ? `<p style="margin-top:.35rem"><span class="badge bg">⚡ ${phase2.name}</span></p>` : ''}
+    </div>
+
+    <div class="rmini">
+      <div class="rbox"><span class="rl">Hoje</span><span class="rn">${pos(rd?.position)}</span><div class="rp">${rd?.points??0} pts</div></div>
+      <div class="rbox"><span class="rl">Fase</span><span class="rn">${pos(rp?.position)}</span><div class="rp">${rp?.points??0} pts</div></div>
+      <div class="rbox"><span class="rl">Geral</span><span class="rn" style="color:var(--gold)">${pos(ro2?.position)}</span><div class="rp">${ro2?.points??0} pts</div></div>
+    </div>
+
+    <div class="sec">
+      <div class="stitle fb"><span>Jogos de hoje — ${fmtDate(new Date().toISOString())}</span><button class="btn btn-p btn-sm" onclick="nav('palpites')">Editar palpites</button></div>
+      <div class="card">${matchesHtml}</div>
+    </div>
+  `)
+}
+
+// ════════════════════════════════════════════════════════════════
+// PALPITES — modal
+// ════════════════════════════════════════════════════════════════
+
+// cutoff: jogos cujo dia BRT terminou antes de 00h45 de hoje são escondidos
+function picksDateCutoff() {
+  const now = new Date()
+  const brtNow = new Date(now.toLocaleString('en-US', {timeZone: TZ}))
+  // se são menos de 00h45 BRT, o "dia anterior" ainda vale
+  const cutoffToday = new Date(brtNow)
+  cutoffToday.setHours(0, 45, 0, 0)
+  let cutoffDate
+  if (brtNow < cutoffToday) {
+    // antes das 00h45 — mostrar jogos de ontem também
+    const yesterday = new Date(brtNow)
+    yesterday.setDate(yesterday.getDate() - 1)
+    cutoffDate = yesterday.toLocaleDateString('sv-SE', {timeZone: TZ})
+  } else {
+    cutoffDate = brtNow.toLocaleDateString('sv-SE', {timeZone: TZ})
+  }
+  return cutoffDate // dia mínimo a mostrar (YYYY-MM-DD BRT)
+}
+
+window._openPicksReady = async function() {
+  document.getElementById('modal-picks').classList.remove('hidden')
+  document.body.style.overflow = 'hidden'
+  await loadPicksModal()
+}
+window.openPicksModal = async function() {
+  // se veio via rota, não renderiza página — só abre modal
+  const hash = window.location.hash.replace('#','')
+  if (hash === 'palpites') {
+    // volta ao dashboard sem quebrar
+    history.replaceState(null,'','#dashboard')
+  }
+  document.getElementById('modal-picks').classList.remove('hidden')
+  document.body.style.overflow = 'hidden'
+  await loadPicksModal()
+}
+
+window.closePicksModal = function() {
+  document.getElementById('modal-picks').classList.add('hidden')
+  document.body.style.overflow = ''
+}
+
+window.closePicks = function(e) {
+  if (e.target.id === 'modal-picks') closePicksModal()
+}
+
+async function loadPicksModal() {
+  const body = document.getElementById('modal-picks-body')
+  body.innerHTML = '<div class="lp"><span class="spin"></span> Carregando...</div>'
+
+  // busca fase ativa
+  const { data: phase } = await sb.from('phases').select('id,name,order_index').eq('status','active').single()
+  if (!phase) {
+    body.innerHTML = '<div class="empty">Nenhuma fase ativa.</div>'
+    return
+  }
+
+  // busca todos os jogos da fase
+  const { data: matches } = await sb.from('matches')
+    .select('id,kickoff_at,picks_open_at,picks_close_at,status,is_knockout,placeholder_home,placeholder_away,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code)')
+    .eq('phase_id', phase.id)
+    .order('kickoff_at')
+
+  if (!matches?.length) {
+    body.innerHTML = '<div class="empty">Sem jogos nesta fase.</div>'
+    return
+  }
+
+  // filtra: esconde dias que já passaram (cutoff 00h45 BRT)
+  const cutoff = picksDateCutoff()
+  const visible = matches.filter(m => {
+    const dayBRT = new Date(m.kickoff_at).toLocaleDateString('sv-SE', {timeZone: TZ})
+    return dayBRT >= cutoff
+  })
+
+  if (!visible.length) {
+    body.innerHTML = '<div class="empty">Sem jogos a exibir.</div>'
+    return
+  }
+
+  // busca palpites existentes
+  const { data: existing } = await sb.from('match_picks')
+    .select('match_id,home_score,away_score,qualifier_team_id')
+    .eq('user_id', SESSION.user.id)
+    .in('match_id', visible.map(m => m.id))
+
+  const pm = Object.fromEntries((existing??[]).map(p => [p.match_id, p]))
+
+  // agrupa por dia BRT
+  const byDay = {}
+  for (const m of visible) {
+    const day = new Date(m.kickoff_at).toLocaleDateString('sv-SE', {timeZone: TZ})
+    ;(byDay[day] = byDay[day]||[]).push(m)
+  }
+
+  const now = new Date()
+
+  const html = Object.entries(byDay).map(([day, ms]) => {
+    const hasOpen = ms.some(m =>
+      m.picks_open_at && new Date(m.picks_open_at) <= now &&
+      new Date(m.picks_close_at) > now && m.status === 'scheduled'
+    )
+    return `
+    <div class="day-hd" style="margin-top:.75rem">${fmtDayFull(ms[0].kickoff_at)}${hasOpen ? ' <span class="badge bg" style="vertical-align:middle;font-size:.65rem">aberto</span>' : ''}</div>
+    <div class="card" style="${hasOpen ? 'border:2px solid var(--green);' : ''}">
+      ${hasOpen ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;padding-bottom:.5rem;border-bottom:1px solid var(--line)"><span class="badge bg">✓ Aberto para palpites</span><span class="muted" id="cd-${day}" style="font-size:.75rem;font-weight:600;color:var(--green)"></span></div>` : ''}
+      ${ms.map(m => {
+        const p      = pm[m.id]
+        const open = m.picks_open_at && new Date(m.picks_open_at) <= now && new Date(m.picks_close_at) > now && m.status === 'scheduled'
+        const hn     = p?.home_score ?? ''
+        const an     = p?.away_score ?? ''
+        const qid    = p?.qualifier_team_id ?? ''
+        const saved  = p ? 'saved' : ''
+        const locked = !open ? 'locked' : ''
+
+        const koExtra = m.is_knockout ? `
+          <div class="qrow">
+            <select class="qsel" id="q-${m.id}" ${!open?'disabled':''}>
+              <option value="">Quem avança?</option>
+              ${m.home_team ? `<option value="${m.home_team.id}" ${qid==m.home_team.id?'selected':''}>${m.home_team.name}</option>` : ''}
+              ${m.away_team ? `<option value="${m.away_team.id}" ${qid==m.away_team.id?'selected':''}>${m.away_team.name}</option>` : ''}
+            </select>
+          </div>` : ''
+
+        const displayScore = p ? `${hn} × ${an}` : '0 × 0'
+        let statusMsg = ''
+        if (!open && m.status === 'scheduled') {
+          const notYetOpen = m.picks_open_at && new Date(m.picks_open_at) > now
+          const msg = notYetOpen ? '🔒 Palpite bloqueado' : '🔒 Prazo encerrado'
+          statusMsg = `<div class="pick-locked-msg">${msg} · ${displayScore}</div>`
+        } else if (!open && m.status === 'finished') {
+          statusMsg = `<div class="pick-locked-msg">Jogo encerrado · ${displayScore}</div>`
+        } else {
+          statusMsg = `<div class="pstatus ${p?'ok':''}" id="pst-${m.id}">${p ? `✓ Salvo` : 'Digite para salvar'}</div>`
+        }
+
+        return `
+          <div class="prow ${locked}" id="prow-${m.id}">
+            <div class="prow-main">
+              <div class="pteam h">${teamName(m,'home')}</div>
+              <div class="pinputs">
+                <input class="si ${saved}" type="number" min="0" max="20"
+                       id="ph-${m.id}" value="${hn}" placeholder="0"
+                       ${!open?'disabled':''}
+                       oninput="autoSavePick(${m.id})">
+                <span class="psep">×</span>
+                <input class="si ${saved}" type="number" min="0" max="20"
+                       id="pa-${m.id}" value="${an}" placeholder="0"
+                       ${!open?'disabled':''}
+                       oninput="autoSavePick(${m.id})">
+              </div>
+              <div class="pteam a">${teamName(m,'away')}</div>
+            </div>
+            ${koExtra}
+            ${statusMsg}
+          </div>
+        `
+      }).join('')}
+    </div>
+  `}).join('')
+
+  body.innerHTML = html
+
+  // start countdowns for open days
+  startCountdowns(byDay, Object.fromEntries(visible.map(m => [
+    new Date(m.kickoff_at).toLocaleDateString('sv-SE', {timeZone: TZ}),
+    new Date(m.picks_close_at)
+  ])))
+}
+
+function startCountdowns(byDay, closeByDay) {
+  // clear any existing countdown interval
+  if (window._cdInterval) clearInterval(window._cdInterval)
+
+  function tick() {
+    const now = new Date()
+    for (const [day, ms] of Object.entries(byDay)) {
+      const el = document.getElementById(`cd-${day}`)
+      if (!el) continue
+      const close = closeByDay[day]
+      if (!close) continue
+      const diff = close - now
+      if (diff <= 0) {
+        el.textContent = 'Encerrado'
+        el.style.color = 'var(--red)'
+        continue
+      }
+      const h = Math.floor(diff / 3600000)
+      const m = Math.floor((diff % 3600000) / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      el.textContent = h > 0
+        ? `${h}h ${String(m).padStart(2,'0')}m restantes`
+        : m > 0
+        ? `${m}m ${String(s).padStart(2,'0')}s restantes`
+        : `${s}s restantes`
+      if (diff < 300000) el.style.color = 'var(--red)' // <5min: red
+    }
+  }
+
+  tick()
+  window._cdInterval = setInterval(tick, 1000)
+}
+
+async function renderPalpites() {
+  loading()
+
+  const { data: phaseArr } = await sb.from('phases').select('id,name').eq('status','active').limit(1)
+  const phase = phaseArr?.[0] ?? null
+
+  if (!phase) {
+    setContent('<div class="ph"><h1>Palpites</h1></div><div class="empty">Nenhuma fase ativa.</div>')
+    return
+  }
+
+  const { data: matches } = await sb.from('matches')
+    .select('id,kickoff_at,picks_open_at,picks_close_at,status,is_knockout,placeholder_home,placeholder_away,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code)')
+    .eq('phase_id', phase.id)
+    .order('kickoff_at')
+
+  if (!matches?.length) {
+    setContent('<div class="ph"><h1>Palpites</h1></div><div class="empty">Sem jogos nesta fase.</div>')
+    return
+  }
+
+  const cutoff = picksDateCutoff()
+  const visible = matches.filter(m =>
+    new Date(m.kickoff_at).toLocaleDateString('sv-SE', {timeZone: TZ}) >= cutoff
+  )
+
+  const { data: existing } = await sb.from('match_picks')
+    .select('match_id,home_score,away_score,qualifier_team_id')
+    .eq('user_id', SESSION.user.id)
+    .in('match_id', visible.map(m => m.id))
+
+  const pm = Object.fromEntries((existing??[]).map(p => [p.match_id, p]))
+  const now = new Date()
+
+  const byDay = {}
+  for (const m of visible) {
+    const day = new Date(m.kickoff_at).toLocaleDateString('sv-SE', {timeZone: TZ})
+    ;(byDay[day] = byDay[day]||[]).push(m)
+  }
+
+  const html = Object.entries(byDay).map(([day, ms]) => {
+    const hasOpen = ms.some(m =>
+      m.picks_open_at && new Date(m.picks_open_at) <= now &&
+      new Date(m.picks_close_at) > now && m.status === 'scheduled'
+    )
+    return `
+      <div class="day-hd" style="margin-top:.75rem">${fmtDayFull(ms[0].kickoff_at)}${hasOpen ? ' <span class="badge bg" style="vertical-align:middle;font-size:.65rem">aberto</span>' : ''}</div>
+      <div class="card" style="${hasOpen ? 'border:2px solid var(--green);' : ''}">
+        ${hasOpen ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;padding-bottom:.5rem;border-bottom:1px solid var(--line)"><span class="badge bg">✓ Aberto para palpites</span><span class="muted" id="cd-${day}" style="font-size:.75rem;font-weight:600;color:var(--green)"></span></div>` : ''}
+        ${ms.map(m => {
+          const p      = pm[m.id]
+          const open   = m.picks_open_at && new Date(m.picks_open_at) <= now && new Date(m.picks_close_at) > now && m.status === 'scheduled'
+          const hn     = p?.home_score ?? ''
+          const an     = p?.away_score ?? ''
+          const qid    = p?.qualifier_team_id ?? ''
+          const locked = !open ? 'locked' : ''
+
+          const koExtra = m.is_knockout ? `
+            <div class="qrow">
+              <select class="qsel" id="q-${m.id}" ${!open?'disabled':''}>
+                <option value="">Quem avança?</option>
+                ${m.home_team ? `<option value="${m.home_team.id}" ${qid==m.home_team.id?'selected':''}>${m.home_team.name}</option>` : ''}
+                ${m.away_team ? `<option value="${m.away_team.id}" ${qid==m.away_team.id?'selected':''}>${m.away_team.name}</option>` : ''}
+              </select>
+            </div>` : ''
+
+          const displayScore = p ? `${hn} × ${an}` : '0 × 0'
+          let statusMsg = ''
+          if (!open && m.status === 'scheduled') {
+            const notYetOpen = m.picks_open_at && new Date(m.picks_open_at) > now
+            const msg = notYetOpen ? '🔒 Palpite bloqueado' : '🔒 Prazo encerrado'
+            statusMsg = `<div class="pick-locked-msg">${msg} · ${displayScore}</div>`
+          } else if (!open && m.status === 'finished') {
+            statusMsg = `<div class="pick-locked-msg">Jogo encerrado · ${displayScore}</div>`
+          } else {
+            statusMsg = `<div class="pstatus ${p?'ok':''}" id="pst-${m.id}">${p ? '✓ Salvo' : 'Digite para salvar'}</div>`
+          }
+
+          return `
+            <div class="prow ${locked}" id="prow-${m.id}">
+              <div class="prow-main">
+                <div class="pteam h">${teamName(m,'home')}</div>
+                <div class="pinputs">
+                  <input class="si ${p?'saved':''}" type="number" min="0" max="20"
+                         id="ph-${m.id}" value="${hn}" placeholder="0"
+                         ${!open?'disabled':''}
+                         oninput="autoSavePick(${m.id})">
+                  <span class="psep">×</span>
+                  <input class="si ${p?'saved':''}" type="number" min="0" max="20"
+                         id="pa-${m.id}" value="${an}" placeholder="0"
+                         ${!open?'disabled':''}
+                         oninput="autoSavePick(${m.id})">
+                </div>
+                <div class="pteam a">${teamName(m,'away')}</div>
+              </div>
+              ${koExtra}
+              ${statusMsg}
+            </div>`
+        }).join('')}
+      </div>`
+  }).join('')
+
+  setContent(`
+    <div class="ph">
+      <h1>Palpites</h1>
+      <p>Palpites salvos automaticamente. Prazo: 23h59 do dia anterior ao jogo.</p>
+    </div>
+    ${html}
+  `)
+
+  startCountdowns(byDay, Object.fromEntries(visible.map(m => [
+    new Date(m.kickoff_at).toLocaleDateString('sv-SE', {timeZone: TZ}),
+    new Date(m.picks_close_at)
+  ])))
+}
+
+// debounce por jogo
+const _saveTimers = {}
+window.autoSavePick = function(matchId) {
+  clearTimeout(_saveTimers[matchId])
+  _saveTimers[matchId] = setTimeout(() => savePick(matchId), 800)
+}
+
+async function savePick(matchId) {
+  const hEl = document.getElementById(`ph-${matchId}`)
+  const aEl = document.getElementById(`pa-${matchId}`)
+  const stEl= document.getElementById(`pst-${matchId}`)
+  const qEl = document.getElementById(`q-${matchId}`)
+
+  const hs = hEl?.value; const as = aEl?.value
+  if (hs === '' || as === '') return
+
+  const payload = {
+    user_id:   SESSION.user.id,
+    match_id:  matchId,
+    home_score: parseInt(hs),
+    away_score: parseInt(as),
+    qualifier_team_id: qEl?.value || null,
+    is_auto: false,
+  }
+
+  const { error } = await sb.from('match_picks')
+    .upsert(payload, { onConflict: 'user_id,match_id' })
+
+  if (error) {
+    if (stEl) { stEl.textContent = 'Erro ao salvar.'; stEl.className = 'pstatus err' }
+    return
+  }
+
+  hEl?.classList.add('saved'); aEl?.classList.add('saved')
+  if (stEl) { stEl.textContent = `Salvo às ${fmtTime(new Date().toISOString())}`; stEl.className = 'pstatus ok' }
+}
+
+// ════════════════════════════════════════════════════════════════
+// MERCADO
+// ════════════════════════════════════════════════════════════════
+async function renderMercado() {
+  loading()
+
+  const { data: phaseArr } = await sb.from('phases').select('id,name,market_opens_at,market_closes_at').eq('status','active').limit(1)
+  const phase = phaseArr?.[0] ?? null
+
+  if (!phase) {
+    setContent('<div class="ph"><h1>Mercado</h1></div><div class="empty">Mercado fechado. Aguarde a próxima fase.</div>')
+    return
+  }
+
+  const marketClosed = phase.market_closes_at && expired(phase.market_closes_at)
+
+  const [
+    { data: teams },
+    { data: prices },
+    { data: myBought },
+    { data: allBought },
+    { data: balance },
+    { data: profiles },
+  ] = await Promise.all([
+    sb.from('teams').select('id,name,code,shelf,ordinal_rank,eliminated').order('ordinal_rank'),
+    sb.from('team_prices').select('team_id,price').eq('phase_id',phase.id),
+    sb.from('team_purchases').select('team_id,price_paid').eq('user_id',SESSION.user.id).eq('phase_id',phase.id),
+    marketClosed ? sb.from('team_purchases').select('team_id,user_id').eq('phase_id',phase.id) : Promise.resolve({data:[]}),
+    sb.from('user_coin_balance').select('remaining_coins,total_coins,spent_coins').eq('user_id',SESSION.user.id).eq('phase_id',phase.id).single(),
+    marketClosed ? sb.from('profiles').select('id,display_name') : Promise.resolve({data:[]}),
+  ])
+
+  const priceMap   = Object.fromEntries((prices??[]).map(p=>[p.team_id,p.price]))
+  const boughtSet  = new Set((myBought??[]).map(b=>b.team_id))
+  const remaining  = balance?.remaining_coins ?? 24
+  const total      = balance?.total_coins ?? 24
+  const spent      = balance?.spent_coins ?? 0
+  const teamMap    = Object.fromEntries((teams??[]).map(t=>[t.id,t]))
+  const profileMap = Object.fromEntries((profiles??[]).map(p=>[p.id,p.display_name]))
+
+  const shelves = ['S','A','B','C']
+  const shelfLabels = {S:'⭐ S — Favoritos',A:'A — Competitivos',B:'B — Candidatas a zebra',C:'C — Zebras puras'}
+  const advancePts = {
+    S: [8, 12, 18, 27, 40, 60],
+    A: [14, 21, 31, 47, 70, 105],
+    B: [22, 33, 50, 75, 112, 168],
+    C: [35, 52, 78, 117, 175, 263],
+  }
+  const phaseIdx = (phase.order_index ?? 1) - 1
+  const shelfPts = {
+    S: `${advancePts.S[phaseIdx]} pts se avançar`,
+    A: `${advancePts.A[phaseIdx]} pts se avançar`,
+    B: `${advancePts.B[phaseIdx]} pts se avançar`,
+    C: `${advancePts.C[phaseIdx]} pts se avançar`,
+  }
+
+  // ── minhas seleções no topo ───────────────────────────────
+  const myTeams = [...boughtSet].map(id => teamMap[id]).filter(Boolean)
+  const mySelHtml = myTeams.length ? `
+    <div class="sec">
+      <div class="stitle">Minhas seleções (${myTeams.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.5rem">
+        ${myTeams.map(t => `
+          <div style="display:flex;align-items:center;gap:.3rem;background:var(--green-s);border:1px solid var(--green);border-radius:4px;padding:.3rem .6rem;font-size:.8rem;font-weight:600">
+            <span>${flag(t.code)}</span><span>${t.name}</span>
+            <span class="shelf-badge s${t.shelf}" style="font-size:.6rem;padding:.1rem .3rem">${t.shelf}</span>
+            ${!marketClosed ? `<span onclick="cancelPurchase(${t.id})" style="cursor:pointer;color:var(--red);margin-left:.2rem;font-size:.9rem">✕</span>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>` : ''
+
+  // ── seleções de todos (após mercado fechar) ───────────────
+  let allPicksHtml = ''
+  if (marketClosed && allBought?.length) {
+    const byUser = {}
+    for (const p of allBought) {
+      ;(byUser[p.user_id] = byUser[p.user_id]||[]).push(p.team_id)
+    }
+    allPicksHtml = `
+      <div class="sec">
+        <div class="stitle">Seleções de todos</div>
+        ${Object.entries(byUser).map(([uid, tids]) => `
+          <div class="card" style="margin-bottom:.5rem">
+            <div style="font-size:.8rem;font-weight:600;margin-bottom:.5rem">${uid === SESSION.user.id ? 'Você' : (profileMap[uid]??'?')}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:.3rem">
+              ${tids.map(tid => {
+                const t = teamMap[tid]
+                if (!t) return ''
+                return `<span style="font-size:.78rem;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.2rem .5rem">${flag(t.code)} ${t.name} <span class="shelf-badge s${t.shelf}" style="font-size:.58rem;padding:.1rem .3rem">${t.shelf}</span></span>`
+              }).join('')}
+            </div>
+          </div>`).join('')}
+      </div>`
+  }
+
+  // ── grid de prateleiras ───────────────────────────────────
+  const shelvesHtml = marketClosed ? '' : shelves.map(s => {
+    const ts = (teams??[]).filter(t=>t.shelf===s)
+    return `
+      <div class="shelf-hd">
+        <span class="shelf-badge s${s}">${shelfLabels[s]}</span>
+        <span class="muted" style="font-size:.72rem">${shelfPts[s]}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:1rem">
+        ${ts.map(t => {
+          const price    = priceMap[t.id] ?? (s==='S'?12:s==='A'?7:s==='B'?4:2)
+          const isBought = boughtSet.has(t.id)
+          const cls      = t.eliminated ? 'elim' : isBought ? 'bought' : ''
+          const priceTag = isBought
+            ? `<span style="font-size:.65rem;color:var(--green)">✓</span>`
+            : t.eliminated
+            ? `<span style="font-size:.65rem;color:var(--t3)">—</span>`
+            : `<span style="font-size:.72rem;font-weight:700;color:var(--green)">${price}🪙</span>`
+          return `
+            <div class="tcard ${cls}" id="tc-${t.id}"
+                 onclick="toggleTeam(${t.id},${price})"
+                 style="flex-direction:column;align-items:center;text-align:center;padding:.5rem .35rem;gap:.2rem">
+              <span style="font-size:1.4rem;line-height:1">${flag(t.code)}</span>
+              <span class="tname" style="font-size:.72rem;line-height:1.2">${t.name}</span>
+              ${priceTag}
+            </div>`
+        }).join('')}
+      </div>`
+  }).join('')
+
+  setContent(`
+    <div class="ph">
+      <h1>Mercado</h1>
+      <p>${phase.name}${phase.market_closes_at ? ` · Prazo: ${fmtDate(phase.market_closes_at)} ${fmtTime(phase.market_closes_at)}` : ''}</p>
+    </div>
+
+    ${marketClosed ? `<div class="card" style="margin-bottom:1rem;background:var(--gold-s);border-color:var(--gold)"><span style="font-size:.85rem;color:var(--gold)">🔒 Mercado encerrado para esta fase.</span></div>` : `
+    <div class="bbar">
+      <div>
+        <div class="blabel">Saldo disponível</div>
+        <div class="bval" id="balance-val">${remaining} <span style="font-size:.8rem;font-weight:400;color:var(--t3)">/ ${total} moedas</span></div>
+      </div>
+      <button class="btn btn-p" id="buy-btn" onclick="confirmPurchases()">Confirmar compras</button>
+    </div>`}
+
+    ${mySelHtml}
+    ${allPicksHtml}
+    <div id="pending-sel"></div>
+    ${shelvesHtml}
+  `)
+
+  window._mercado = { phase, priceMap, boughtSet, remaining, totalCoins: total, selected: new Set(), marketClosed }
+  window._teamsCache = teams
+}
+
+function updatePendingList(s, teams) {
+  const el = document.getElementById('pending-sel')
+  if (!el) return
+  const pending = [...s.selected].map(id => (teams??[]).find(t=>t.id===id)).filter(Boolean)
+  if (!pending.length) { el.innerHTML = ''; return }
+  el.innerHTML = `
+    <div class="stitle" style="margin-top:.75rem">Selecionadas (confirme para salvar)</div>
+    <div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem">
+      ${pending.map(t => `
+        <div style="display:flex;align-items:center;gap:.3rem;background:var(--gold-s);border:1px solid var(--gold);border-radius:4px;padding:.3rem .6rem;font-size:.8rem;font-weight:600">
+          <span>${flag(t.code)}</span><span>${t.name}</span>
+          <span class="shelf-badge s${t.shelf}" style="font-size:.6rem">${t.shelf}</span>
+          <span onclick="toggleTeam(${t.id},${s.priceMap[t.id]??2})" style="cursor:pointer;color:var(--red);margin-left:.2rem">✕</span>
+        </div>`).join('')}
+    </div>`
+}
+
+window.cancelPurchase = async function(teamId) {
+  const s = window._mercado
+  // if it's a pending selection (not yet confirmed), just deselect locally
+  if (s.selected.has(teamId)) {
+    const price = s.priceMap[teamId] ?? 2
+    s.selected.delete(teamId)
+    s.remaining += price
+    const el = document.getElementById(`tc-${teamId}`)
+    if (el) el.classList.remove('sel')
+    renderMercado()
+    return
+  }
+  // if it's a confirmed purchase, delete from DB
+  if (!confirm('Remover esta seleção já confirmada?')) return
+  const { error } = await sb.from('team_purchases')
+    .delete()
+    .eq('user_id', SESSION.user.id)
+    .eq('team_id', teamId)
+    .eq('phase_id', s.phase.id)
+  if (error) { err('Erro ao remover.'); return }
+  ok('Seleção removida.')
+  renderMercado()
+}
+
+window.toggleTeam = function(teamId, price) {
+  const s = window._mercado
+  if (s.boughtSet.has(teamId) || s.marketClosed) return
+
+  const el = document.getElementById(`tc-${teamId}`)
+  if (s.selected.has(teamId)) {
+    s.selected.delete(teamId)
+    s.remaining += price
+    el.classList.remove('sel')
+  } else {
+    if (price > s.remaining) { err('Saldo insuficiente.'); return }
+    s.selected.add(teamId)
+    s.remaining -= price
+    el.classList.add('sel')
+  }
+  // update balance display
+  const bv = document.getElementById('balance-val')
+  if (bv) bv.innerHTML = `${s.remaining} <span style="font-size:.8rem;font-weight:400;color:var(--t3)">/ ${s.totalCoins} moedas</span>`
+  // update pending list
+  updatePendingList(s, window._teamsCache)
+}
+
+window.confirmPurchases = async function() {
+  const s = window._mercado
+  if (!s.selected.size) { err('Selecione pelo menos uma seleção.'); return }
+
+  const btn = document.getElementById('buy-btn')
+  btn.disabled = true; btn.textContent = 'Comprando...'
+
+  const rows = [...s.selected].map(tid => ({
+    user_id:    SESSION.user.id,
+    team_id:    tid,
+    phase_id:   s.phase.id,
+    price_paid: s.priceMap[tid] ?? 2,
+    is_auto:    false,
+  }))
+
+  const { error } = await sb.from('team_purchases').insert(rows)
+  if (error) {
+    err('Erro ao confirmar compras. Tente novamente.')
+    btn.disabled = false; btn.textContent = 'Confirmar compras'
+    return
+  }
+
+  ok(`${rows.length} seleção(ões) comprada(s)!`)
+  setTimeout(() => renderMercado(), 800)
+}
+
+// ════════════════════════════════════════════════════════════════
+// RANKINGS
+// ════════════════════════════════════════════════════════════════
+let _rankTab = 'overall'
+
+async function renderRankings() {
+  loading()
+
+  const [
+    { data: overall },
+    { data: phaseRanks },
+    { data: dailyRanks },
+    { data: profiles },
+    { data: activePhase },
+  ] = await Promise.all([
+    sb.from('ranking_overall').select('user_id,points,position').order('position'),
+    sb.from('ranking_phase').select('user_id,points,position,phase_id').eq('is_final',false).order('position'),
+    sb.from('ranking_daily').select('user_id,points,position').eq('day',todayStr()).order('position'),
+    sb.from('profiles').select('id,display_name'),
+    sb.from('phases').select('id,name').eq('status','active').single(),
+  ])
+
+  const pMap = Object.fromEntries((profiles??[]).map(p=>[p.id,p.display_name]))
+
+  function tableHtml(rows) {
+    if (!rows?.length) return '<div class="empty">Sem dados ainda.</div>'
+    return `
+      <table class="rtable">
+        <thead><tr>
+          <th style="width:2rem">#</th>
+          <th>Participante</th>
+          <th class="tr">Pontos</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(r => {
+            const isMe = r.user_id === SESSION.user.id
+            const posClass = r.position===1?'p1':r.position===2?'p2':r.position===3?'p3':''
+            return `<tr class="${isMe?'me':''}">
+              <td><span class="rpos ${posClass}">${r.position}º</span></td>
+              <td>${pMap[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
+              <td class="rpts tr">${r.points}</td>
+            </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+    `
+  }
+
+  const tabs = [
+    {id:'overall', label:'Geral',   data: overall},
+    {id:'phase',   label: activePhase?.name ?? 'Fase', data: phaseRanks},
+    {id:'daily',   label:'Hoje',    data: dailyRanks},
+  ]
+
+  function renderTabs() {
+    const tab = tabs.find(t=>t.id===_rankTab) ?? tabs[0]
+    return `
+      <div class="rtab-bar">
+        ${tabs.map(t=>`<button class="rtab ${_rankTab===t.id?'active':''}" onclick="switchRankTab('${t.id}')">${t.label}</button>`).join('')}
+      </div>
+      <div class="card">${tableHtml(tab.data)}</div>
+    `
+  }
+
+  setContent(`
+    <div class="ph"><h1>Rankings</h1></div>
+    <div id="rank-content">${renderTabs()}</div>
+  `)
+
+  window._rankData = { tabs }
+}
+
+window.switchRankTab = function(tab) {
+  _rankTab = tab
+  const { tabs } = window._rankData
+  const active = tabs.find(t=>t.id===tab)
+
+  function tableHtml(rows) {
+    if (!rows?.length) return '<div class="empty">Sem dados ainda.</div>'
+    return `
+      <table class="rtable">
+        <thead><tr><th style="width:2rem">#</th><th>Participante</th><th class="tr">Pontos</th></tr></thead>
+        <tbody>
+          ${rows.map(r => {
+            const isMe = r.user_id === SESSION.user.id
+            const posClass = r.position===1?'p1':r.position===2?'p2':r.position===3?'p3':''
+            return `<tr class="${isMe?'me':''}">
+              <td><span class="rpos ${posClass}">${r.position}º</span></td>
+              <td>${window._pMap?.[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
+              <td class="rpts tr">${r.points}</td>
+            </tr>`
+          }).join('')}
+        </tbody>
+      </table>
+    `
+  }
+
+  document.getElementById('rank-content').innerHTML = `
+    <div class="rtab-bar">
+      ${tabs.map(t=>`<button class="rtab ${tab===t.id?'active':''}" onclick="switchRankTab('${t.id}')">${t.label}</button>`).join('')}
+    </div>
+    <div class="card">${tableHtml(active?.data)}</div>
+  `
+}
+
+// ════════════════════════════════════════════════════════════════
+// JOGOS
+// ════════════════════════════════════════════════════════════════
+async function renderJogos() {
+  loading()
+
+  const { data: matches } = await sb.from('matches')
+    .select('id,kickoff_at,status,phase_id,is_knockout,home_score,away_score,placeholder_home,placeholder_away,home_team:home_team_id(name,code),away_team:away_team_id(name,code)')
+    .order('kickoff_at')
+
+  const { data: phases } = await sb.from('phases').select('id,name,order_index').order('order_index')
+  const phMap = Object.fromEntries((phases??[]).map(p=>[p.id,p.name]))
+
+  // agrupa por fase depois por dia
+  const byPhase = {}
+  for (const m of matches??[]) {
+    const pid = m.phase_id
+    ;(byPhase[pid] = byPhase[pid]||{})[
+      new Date(m.kickoff_at).toLocaleDateString('sv-SE',{timeZone:TZ})
+    ] ||= []
+    byPhase[pid][new Date(m.kickoff_at).toLocaleDateString('sv-SE',{timeZone:TZ})].push(m)
+  }
+
+  const html = Object.entries(byPhase).map(([pid, days]) => `
+    <div class="phase-hd">${phMap[pid] ?? 'Fase'}</div>
+    ${Object.entries(days).map(([day, ms]) => `
+      <div class="day-hd">${fmtDayFull(ms[0].kickoff_at)}</div>
+      <div class="card" style="margin-bottom:.75rem">
+        ${ms.map(m => `
+          <div class="mrow">
+            <div class="mteam h">${teamName(m,'home')}</div>
+            ${matchScoreHtml(m)}
+            <div class="mteam a">${teamName(m,'away')}</div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('')}
+  `).join('')
+
+  setContent(`
+    <div class="ph"><h1>Calendário</h1><p>Todos os 104 jogos da Copa 2026.</p></div>
+    ${html || '<div class="empty">Nenhum jogo cadastrado.</div>'}
+  `)
+}
+
+// ════════════════════════════════════════════════════════════════
+// ADMIN
+// ════════════════════════════════════════════════════════════════
+async function renderAdmin() {
+  loading()
+
+  const { data: phaseArr } = await sb.from('phases').select('id,name').eq('status','active').limit(1)
+  const phase = phaseArr?.[0] ?? null
+
+  const [
+    { data: pendingMatches },
+    { data: finishedMatches },
+  ] = phase ? await Promise.all([
+    sb.from('matches')
+      .select('id,kickoff_at,home_score,away_score,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away,is_knockout')
+      .eq('phase_id', phase.id).neq('status','finished').order('kickoff_at'),
+    sb.from('matches')
+      .select('id,kickoff_at,home_score,away_score,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away,is_knockout')
+      .eq('phase_id', phase.id).eq('status','finished').order('kickoff_at'),
+  ]) : [{ data: [] }, { data: [] }]
+
+  const allMatches = [...(pendingMatches??[]).map(m=>({...m,finished:false})), ...(finishedMatches??[]).map(m=>({...m,finished:true}))]
+
+  setContent(`
+    <div class="ph"><h1>Admin</h1><p>Fase ativa: ${phase?.name ?? '—'}</p></div>
+
+    <!-- resultado manual -->
+    <div class="sec">
+      <div class="stitle">Inserir / corrigir resultado</div>
+      <div class="card">
+        <div class="fg">
+          <label class="fl">Jogo</label>
+          <select class="fi" id="adm-match" onchange="adminMatchChanged()">
+            <option value="">Selecione o jogo</option>
+            <optgroup label="Aguardando resultado">
+              ${(pendingMatches??[]).map(m => `
+                <option value="${m.id}" data-ko="${m.is_knockout}" data-force="false"
+                  data-hid="${m.home_team?.id??''}" data-hn="${teamName(m,'home',false)}"
+                  data-aid="${m.away_team?.id??''}" data-an="${teamName(m,'away',false)}"
+                  data-hs="${m.home_score??''}" data-as="${m.away_score??''}">
+                  ${fmtDate(m.kickoff_at)} ${fmtTime(m.kickoff_at)} · ${teamName(m,'home',false)} ${m.home_score!=null?m.home_score+'×'+m.away_score:'×'} ${teamName(m,'away',false)}
+                </option>`).join('')}
+            </optgroup>
+            <optgroup label="Corrigir resultado já inserido">
+              ${(finishedMatches??[]).map(m => `
+                <option value="${m.id}" data-ko="${m.is_knockout}" data-force="true"
+                  data-hid="${m.home_team?.id??''}" data-hn="${teamName(m,'home',false)}"
+                  data-aid="${m.away_team?.id??''}" data-an="${teamName(m,'away',false)}"
+                  data-hs="${m.home_score}" data-as="${m.away_score}">
+                  ${fmtDate(m.kickoff_at)} ${fmtTime(m.kickoff_at)} · ${teamName(m,'home',false)} ${m.home_score}×${m.away_score} ${teamName(m,'away',false)} ✓
+                </option>`).join('')}
+            </optgroup>
+          </select>
+        </div>
+
+        <div id="adm-correction-notice" class="hidden" style="background:var(--gold-s);border:1px solid var(--gold);border-radius:var(--r);padding:.5rem .75rem;font-size:.82rem;color:var(--gold);margin-bottom:.75rem">
+          ⚠️ Corrigindo resultado já inserido — os pontos serão recalculados.
+        </div>
+
+        <div class="fg">
+          <div style="display:grid;grid-template-columns:1fr auto 1fr auto;align-items:end;gap:.5rem">
+            <div>
+              <label class="fl" id="adm-hn">Casa</label>
+              <input class="fi" type="number" min="0" id="adm-hs2" placeholder="0">
+            </div>
+            <div style="padding-bottom:.6rem;color:var(--t3);font-size:1.1rem;text-align:center">×</div>
+            <div>
+              <label class="fl" id="adm-an">Fora</label>
+              <input class="fi" type="number" min="0" id="adm-as2" placeholder="0">
+            </div>
+            <div style="padding-bottom:.4rem">
+              <button class="btn btn-s btn-sm" onclick="clearMatchResult()" title="Limpar placar">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="adm-ko-section" class="hidden">
+          <div class="fg">
+            <label class="fl">Placar aos 90min</label>
+            <div class="fb gap1">
+              <input class="fi" type="number" min="0" id="adm-h90" placeholder="0">
+              <span style="padding:.5rem">×</span>
+              <input class="fi" type="number" min="0" id="adm-a90" placeholder="0">
+            </div>
+          </div>
+          <div class="fg">
+            <label class="fl">Quem avançou</label>
+            <select class="fi" id="adm-winner">
+              <option value="">Selecione</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="fb gap1" style="margin-top:.5rem">
+          <button class="btn btn-s" style="flex:1" onclick="submitResult(false)">Atualizar placar</button>
+          <button class="btn btn-p" style="flex:1" onclick="submitResult(true)">Finalizar jogo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- encerrar fase -->
+    <div class="sec">
+      <div class="stitle">Encerrar fase</div>
+      <div class="card">
+        <p style="margin-bottom:.75rem;font-size:.875rem">
+          Encerra <strong>${phase?.name ?? '—'}</strong>, calcula pontos das seleções e abre o mercado da próxima fase.
+          Use apenas quando todos os jogos da fase estiverem com resultado inserido.
+        </p>
+        <button class="btn btn-d btn-w" onclick="endPhase()">Encerrar ${phase?.name ?? 'fase'}</button>
+      </div>
+    </div>
+
+    <!-- modo de teste -->
+    <div class="sec">
+      <div class="stitle">Modo de teste</div>
+      <div class="card">
+        <p style="margin-bottom:.75rem;font-size:.875rem;color:var(--red)">
+          ⚠️ Apaga todos os resultados, palpites e pontuações. Use apenas para testes.
+        </p>
+        <button class="btn btn-d btn-w" onclick="resetAll()">Resetar tudo</button>
+      </div>
+    </div>
+
+    <!-- criar usuário -->
+    <div class="sec">
+      <div class="stitle">Criar participante</div>
+      <div class="card">
+        <div class="fg">
+          <label class="fl">Nome</label>
+          <input class="fi" type="text" id="nu-name" placeholder="Nome completo">
+        </div>
+        <div class="fg">
+          <label class="fl">E-mail</label>
+          <input class="fi" type="email" id="nu-email" placeholder="email@exemplo.com">
+        </div>
+        <div class="fg">
+          <label class="fl">Senha inicial</label>
+          <input class="fi" type="text" id="nu-pw" placeholder="Mínimo 6 caracteres">
+        </div>
+        <button class="btn btn-p btn-w" onclick="createUser()">Criar participante</button>
+      </div>
+    </div>
+  `)
+}
+
+window.adminMatchChanged = function() {
+  const sel   = document.getElementById('adm-match')
+  const opt   = sel.options[sel.selectedIndex]
+  const isKO  = opt.dataset.ko === 'true'
+  const force = opt.dataset.force === 'true'
+  const hn    = opt.dataset.hn; const an = opt.dataset.an
+  const hid   = opt.dataset.hid; const aid = opt.dataset.aid
+
+  document.getElementById('adm-hn').textContent = hn || 'Casa'
+  document.getElementById('adm-an').textContent = an || 'Fora'
+
+  // pre-fill scores if correcting
+  // always pre-fill current scores from dataset (works for both pending and finished)
+  document.getElementById('adm-hs2').value = opt.dataset.hs ?? ''
+  document.getElementById('adm-as2').value = opt.dataset.as ?? ''
+  if (force) {
+    document.getElementById('adm-correction-notice').classList.remove('hidden')
+  } else {
+    document.getElementById('adm-correction-notice').classList.add('hidden')
+  }
+
+  const koSec = document.getElementById('adm-ko-section')
+  if (isKO) {
+    koSec.classList.remove('hidden')
+    const ws = document.getElementById('adm-winner')
+    ws.innerHTML = `<option value="">Selecione</option>`
+    if (hid) ws.innerHTML += `<option value="${hid}">${hn}</option>`
+    if (aid) ws.innerHTML += `<option value="${aid}">${an}</option>`
+  } else {
+    koSec.classList.add('hidden')
+  }
+}
+
+window.submitResult = async function(finalize=false) {
+  const matchId = document.getElementById('adm-match').value
+  const hs = document.getElementById('adm-hs2').value
+  const as = document.getElementById('adm-as2').value
+  if (!matchId || hs==='' || as==='') { err('Preencha o jogo e o placar.'); return }
+
+  const sel  = document.getElementById('adm-match')
+  const opt  = sel.options[sel.selectedIndex]
+  const isKO = opt.dataset.ko === 'true'
+
+  const payload = {
+    match_id:   parseInt(matchId),
+    home_score: parseInt(hs),
+    away_score: parseInt(as),
+    force:      true,   // sempre permite atualizar
+    finalize,           // true = marca como finished e calcula pontos
+  }
+
+  if (isKO) {
+    const h90 = document.getElementById('adm-h90').value
+    const a90 = document.getElementById('adm-a90').value
+    const wid = document.getElementById('adm-winner').value
+    if (finalize && (h90===''||a90===''||!wid)) { err('Preencha placar 90min e quem avançou para finalizar.'); return }
+    if (h90!=='') payload.home_score_90 = parseInt(h90)
+    if (a90!=='') payload.away_score_90 = parseInt(a90)
+    if (wid)      payload.winner_team_id = parseInt(wid)
+  }
+
+  const { data: { session } } = await sb.auth.getSession()
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/admin-set-result`, {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session.access_token}` },
+    body: JSON.stringify(payload),
+  })
+  const json = await res.json()
+  if (!json.ok) { err(json.error ?? 'Erro ao salvar.'); return }
+  ok(finalize ? `Jogo finalizado: ${json.score}!` : `Placar atualizado: ${json.score}`)
+  setTimeout(() => renderAdmin(), 600)
+}
+
+window.clearMatchResult = async function() {
+  const matchId = document.getElementById('adm-match').value
+  if (!matchId) { err('Selecione um jogo primeiro.'); return }
+  if (!confirm('Limpar resultado deste jogo e reabri-lo?')) return
+
+  const { error } = await sb.from('matches').update({
+    status:         'scheduled',
+    home_score:     null,
+    away_score:     null,
+    home_score_90:  null,
+    away_score_90:  null,
+    winner_team_id: null,
+    result_source:  null,
+    result_set_at:  null,
+  }).eq('id', parseInt(matchId))
+
+  if (error) { err('Erro ao limpar: ' + error.message); return }
+
+  // apaga pontos deste jogo
+  await sb.from('points_log').delete().eq('match_id', parseInt(matchId))
+
+  document.getElementById('adm-hs2').value = ''
+  document.getElementById('adm-as2').value = ''
+  ok('Jogo reaberto.')
+  setTimeout(() => renderAdmin(), 600)
+}
+
+window.endPhase = async function() {
+  if (!confirm('Encerrar esta fase? Esta ação não pode ser desfeita.')) return
+  const { data: phase } = await sb.from('phases').select('id').eq('status','active').single()
+  if (!phase) { err('Nenhuma fase ativa.'); return }
+
+  const { data: { session } } = await sb.auth.getSession()
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/process-phase-end`, {
+    method: 'POST',
+    headers: {
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ phase_id: phase.id }),
+  })
+  const json = await res.json()
+  if (!json.ok) { err(json.error ?? 'Erro ao encerrar fase.'); return }
+  ok('Fase encerrada com sucesso!')
+  setTimeout(() => renderAdmin(), 1000)
+}
+
+window.createUser = async function() {
+  const name  = document.getElementById('nu-name').value.trim()
+  const email = document.getElementById('nu-email').value.trim()
+  const pw    = document.getElementById('nu-pw').value
+  if (!name||!email||!pw) { err('Preencha todos os campos.'); return }
+  if (pw.length < 6)      { err('Senha precisa ter pelo menos 6 caracteres.'); return }
+
+  const { data, error } = await sb.auth.admin.createUser({
+    email, password: pw, email_confirm: true,
+    user_metadata: { display_name: name },
+  })
+  if (error) { err(error.message); return }
+
+  // cria perfil
+  await sb.from('profiles').insert({
+    id: data.user.id, username: email.split('@')[0], display_name: name, is_admin: false,
+  })
+  ok(`Participante ${name} criado!`)
+  document.getElementById('nu-name').value = ''
+  document.getElementById('nu-email').value = ''
+  document.getElementById('nu-pw').value = ''
+}
+
+// ════════════════════════════════════════════════════════════════
+// REGRAS
+// ════════════════════════════════════════════════════════════════
+function renderRegras() {
+  setContent(`
+    <div class="ph">
+      <h1>Regras</h1>
+      <p>Como funciona o Bolão Copa 2026.</p>
+    </div>
+
+    <!-- visão geral -->
+    <div class="sec">
+      <div class="stitle">Visão geral</div>
+      <div class="card">
+        <p style="font-size:.9rem;line-height:1.6">
+          O bolão tem duas camadas de pontuação independentes que se somam ao longo de toda a Copa:
+          <strong>palpites de jogos</strong> (diários) e o <strong>mercado de seleções</strong> (por fase).
+          Há três rankings simultâneos: <strong>diário</strong>, <strong>por fase</strong> e <strong>geral</strong>.
+          O vencedor do bolão é quem tiver maior pontuação no ranking geral ao final da Copa.
+        </p>
+      </div>
+    </div>
+
+    <!-- palpites de jogos -->
+    <div class="sec">
+      <div class="stitle">Palpites de jogos</div>
+      <div class="card">
+        <p style="font-size:.875rem;margin-bottom:.75rem">
+          Antes de cada jogo, você palpita o placar. Os palpites abrem às <strong>00h01 do dia anterior</strong>
+          ao jogo e fecham às <strong>23h59 desse mesmo dia anterior</strong>. Após o prazo,
+          os palpites de todos ficam visíveis.
+        </p>
+        <p style="font-size:.875rem;margin-bottom:.75rem">
+          Se não palpitar dentro do prazo, o sistema registra <strong>0 × 0</strong> automaticamente.
+          Não há penalidade por erro — apenas deixa-se de ganhar pontos.
+        </p>
+        <table style="width:100%;border-collapse:collapse;font-size:.85rem">
+          <thead>
+            <tr style="border-bottom:2px solid var(--line)">
+              <th style="text-align:left;padding:.4rem 0;color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em">Resultado do palpite</th>
+              <th style="text-align:right;padding:.4rem 0;color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em">Pontos</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--line)">
+              <td style="padding:.5rem 0;font-weight:600">Placar exato</td>
+              <td style="text-align:right;font-weight:700;color:var(--green)">15 pts</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--line)">
+              <td style="padding:.5rem 0">Vencedor ou empate certo (placar errado)</td>
+              <td style="text-align:right;font-weight:700;color:var(--green)">3 pts</td>
+            </tr>
+            <tr>
+              <td style="padding:.5rem 0;color:var(--t3)">Tudo errado</td>
+              <td style="text-align:right;color:var(--t3)">0 pts</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--line)">
+          <div style="font-size:.78rem;font-weight:600;color:var(--t2);margin-bottom:.4rem">Jogos eliminatórios</div>
+          <p style="font-size:.82rem;color:var(--t2);line-height:1.55">
+            A partir do playoff, há dois palpites independentes: o <strong>placar aos 90 minutos</strong>
+            (pode ser empate) e <strong>quem avança</strong> (resultado final incluindo prorrogação e pênaltis).
+            Cada um pontua separadamente — é possível acertar o placar e errar quem avança, e vice-versa.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- mercado de seleções -->
+    <div class="sec">
+      <div class="stitle">Mercado de seleções</div>
+      <div class="card">
+        <p style="font-size:.875rem;margin-bottom:.75rem">
+          Antes de cada fase, você recebe <strong>moedas</strong> para comprar seleções em que aposta o avanço.
+          Comprar uma seleção é um palpite de que ela vai avançar naquela fase.
+          Se avançar, você ganha pontos. Se for eliminada, não ganha nada.
+        </p>
+
+        <div style="font-size:.78rem;font-weight:600;color:var(--t2);margin-bottom:.5rem">Prateleiras</div>
+        <p style="font-size:.82rem;color:var(--t2);margin-bottom:.75rem">
+          As 48 seleções são ordenadas pelo ranking FIFA e divididas em 4 prateleiras de 12.
+          Essa ordem é fixada antes da Copa e não muda. Seleções mais bem ranqueadas custam mais
+          moedas, mas rendem menos pontos por avanço. Zebras custam pouco e rendem muito — mas têm
+          menor probabilidade de avançar.
+        </p>
+
+        <table style="width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:.75rem">
+          <thead>
+            <tr style="border-bottom:2px solid var(--line)">
+              <th style="text-align:left;padding:.4rem 0;color:var(--t3);font-size:.7rem;text-transform:uppercase;letter-spacing:.05em">Prateleira</th>
+              <th style="text-align:center;padding:.4rem 0;color:var(--t3);font-size:.7rem;text-transform:uppercase">Posições</th>
+              <th style="text-align:center;padding:.4rem 0;color:var(--t3);font-size:.7rem;text-transform:uppercase">Preço base</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${['S','A','B','C'].map((s,i) => {
+              const pos   = ['1–12','13–24','25–36','37–48'][i]
+              const price = ['12','7','4','2'][i]
+              const label = ['Favoritos','Competitivas','Candidatas a zebra','Zebras puras'][i]
+              return `<tr style="border-bottom:1px solid var(--line)">
+                <td style="padding:.45rem 0"><span class="shelf-badge s${s}" style="font-size:.7rem">${s}</span> ${label}</td>
+                <td style="text-align:center;padding:.45rem 0">${pos}</td>
+                <td style="text-align:center;padding:.45rem 0;font-weight:600">${price} 🪙</td>
+              </tr>`
+            }).join('')}
+          </tbody>
+        </table>
+
+        <div style="font-size:.78rem;font-weight:600;color:var(--t2);margin-bottom:.4rem">Orçamento por fase</div>
+        <p style="font-size:.82rem;color:var(--t2);margin-bottom:.75rem">
+          Você recebe <strong>24 moedas fixas</strong> a cada fase, mais uma parte variável baseada
+          na sua performance da fase anterior: <strong>0,04 moeda por ponto</strong> obtido.
+          A parte fixa domina intencionalmente — ninguém fica sem poder comprar por ter ido mal.
+        </p>
+
+        <div style="font-size:.78rem;font-weight:600;color:var(--t2);margin-bottom:.4rem">Pontos por avanço</div>
+        <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+          <thead>
+            <tr style="border-bottom:2px solid var(--line)">
+              <th style="text-align:left;padding:.35rem 0;color:var(--t3);font-size:.68rem;text-transform:uppercase">Fase alcançada</th>
+              <th style="text-align:center;color:var(--t3);font-size:.68rem">S</th>
+              <th style="text-align:center;color:var(--t3);font-size:.68rem">A</th>
+              <th style="text-align:center;color:var(--t3);font-size:.68rem">B</th>
+              <th style="text-align:center;color:var(--t3);font-size:.68em">C</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${[
+              ['Passa fase de grupos','8','14','22','35'],
+              ['Passa o playoff','12','21','33','52'],
+              ['Passa as oitavas','18','31','50','78'],
+              ['Passa as quartas','27','47','75','117'],
+              ['Passa as semis','40','70','112','175'],
+              ['Campeã','60','105','168','263'],
+            ].map(([fase,...pts],i) => `
+              <tr style="border-bottom:1px solid var(--line);background:${i%2?'var(--bg)':''}">
+                <td style="padding:.35rem 0;font-size:.78rem">${fase}</td>
+                ${pts.map(p=>`<td style="text-align:center;font-weight:600;color:var(--green)">${p}</td>`).join('')}
+              </tr>`).join('')}
+          </tbody>
+        </table>
+
+        <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line)">
+          <div style="font-size:.78rem;font-weight:600;color:var(--t2);margin-bottom:.4rem">Prazo de compras</div>
+          <p style="font-size:.82rem;color:var(--t2)">
+            O mercado fecha <strong>2 horas antes do primeiro jogo de cada fase</strong>.
+            Se não comprar dentro do prazo, o sistema realiza compras automáticas em seu nome,
+            rotacionando pelas prateleiras S → A → B → C até esgotar o saldo, com seleção aleatória
+            dentro de cada prateleira.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- reajuste dinâmico -->
+    <div class="sec">
+      <div class="stitle">Reajuste de preços entre fases</div>
+      <div class="card">
+        <p style="font-size:.875rem;margin-bottom:.75rem">
+          Ao fim de cada fase, os preços das seleções sobreviventes são recalculados automaticamente.
+          Seleções que jogaram bem ficam mais caras na fase seguinte; as que decepcionaram ficam mais baratas.
+          Todo preço tem um <strong>piso e um teto por prateleira</strong>.
+        </p>
+        <p style="font-size:.875rem;margin-bottom:.75rem">
+          O desempenho considera não só gols marcados e sofridos, mas a <strong>qualidade dos adversários</strong>:
+          vencer um time forte vale mais do que vencer um time fraco. Há também um
+          <strong>fator surpresa</strong> — zebras que surpreendem sobem mais do que favoritos que
+          apenas cumprem o esperado.
+        </p>
+
+        <details style="margin-top:.5rem">
+          <summary style="cursor:pointer;font-size:.82rem;font-weight:600;color:var(--t2);padding:.4rem 0;user-select:none">
+            Para os curiosos — fórmula completa ▸
+          </summary>
+          <div style="margin-top:.75rem;padding:.75rem;background:var(--bg);border-radius:var(--r);font-size:.8rem;color:var(--t2);line-height:1.7">
+            <div style="margin-bottom:.5rem"><strong>1. Fator de qualidade do adversário</strong> (por jogo)</div>
+            <code style="display:block;background:var(--white);border:1px solid var(--line);border-radius:4px;padding:.4rem .6rem;margin-bottom:.75rem;font-size:.78rem">
+              fator_adversário = (49 − posição_ordinal_adversário) / 48
+            </code>
+
+            <div style="margin-bottom:.5rem"><strong>2. Gols ajustados</strong> (soma de todos os jogos da fase)</div>
+            <code style="display:block;background:var(--white);border:1px solid var(--line);border-radius:4px;padding:.4rem .6rem;margin-bottom:.75rem;font-size:.78rem">
+              GM_aj = Σ (gols_marcados_no_jogo × fator_adversário)<br>
+              GS_aj = Σ (gols_sofridos_no_jogo × fator_adversário)
+            </code>
+
+            <div style="margin-bottom:.5rem"><strong>3. Score de desempenho</strong></div>
+            <code style="display:block;background:var(--white);border:1px solid var(--line);border-radius:4px;padding:.4rem .6rem;margin-bottom:.75rem;font-size:.78rem">
+              Score = GM_aj − (0,6 × GS_aj)
+            </code>
+
+            <div style="margin-bottom:.5rem"><strong>4. Fator surpresa</strong></div>
+            <code style="display:block;background:var(--white);border:1px solid var(--line);border-radius:4px;padding:.4rem .6rem;margin-bottom:.75rem;font-size:.78rem">
+              fator_surpresa = (49 − posição_ordinal_própria) / 48
+            </code>
+
+            <div style="margin-bottom:.5rem"><strong>5. Novo preço</strong></div>
+            <code style="display:block;background:var(--white);border:1px solid var(--line);border-radius:4px;padding:.4rem .6rem;font-size:.78rem">
+              preço_novo = clamp(preço_base × (1 + Score × fator_surpresa / 4), piso, teto)
+            </code>
+
+            <div style="margin-top:.75rem;font-size:.78rem;color:var(--t3)">
+              Pisos e tetos: S (8–20 🪙) · A (4–14 🪙) · B (2–10 🪙) · C (1–8 🪙)<br>
+              As posições ordinais são fixadas antes da Copa e nunca mudam.
+              A posição 1 é a mais bem ranqueada entre as 48 classificadas.
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <!-- rankings -->
+    <div class="sec">
+      <div class="stitle">Rankings</div>
+      <div class="card">
+        <p style="font-size:.875rem;line-height:1.6">
+          Os três rankings são atualizados em tempo real após cada jogo e cada fase:
+        </p>
+        <div style="margin-top:.75rem;display:flex;flex-direction:column;gap:.5rem">
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span class="badge bg" style="min-width:3.5rem;text-align:center;flex-shrink:0">Diário</span>
+            <span style="font-size:.85rem">Pontos dos jogos do dia. Reinicia à meia-noite.</span>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span class="badge bo" style="min-width:3.5rem;text-align:center;flex-shrink:0">Fase</span>
+            <span style="font-size:.85rem">Pontos acumulados na fase em curso (jogos + seleções). Congela ao fim de cada fase.</span>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:flex-start">
+            <span class="badge bg" style="min-width:3.5rem;text-align:center;flex-shrink:0;background:var(--gold-s);color:var(--gold)">Geral</span>
+            <span style="font-size:.85rem">Total acumulado desde o início da Copa. Define o vencedor do bolão.</span>
+          </div>
+        </div>
+        <div style="margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--line);font-size:.82rem;color:var(--t2)">
+          <strong>Desempate:</strong> maior número de placares exatos → maior número de resultados certos → maior pontuação no mercado de seleções → posição compartilhada.
+        </div>
+      </div>
+    </div>
+  `)
+}
+
+// ════════════════════════════════════════════════════════════════
+// RESET (modo de teste)
+// ════════════════════════════════════════════════════════════════
+window.resetAll = async function() {
+  if (!confirm('Apagar TODOS os resultados, palpites e pontuações? Esta ação não pode ser desfeita.')) return
+  if (!confirm('Tem certeza? Isso vai resetar tudo para o estado inicial.')) return
+
+  const btn = document.querySelector('[onclick="resetAll()"]')
+  btn.disabled = true; btn.textContent = 'Resetando...'
+
+  try {
+    // 1. apaga points_log
+    const { error: e1 } = await sb.from('points_log').delete().neq('id', 0)
+    if (e1) throw new Error('points_log: ' + e1.message)
+
+    // 2. apaga match_picks
+    const { error: e2 } = await sb.from('match_picks').delete().neq('id', 0)
+    if (e2) throw new Error('match_picks: ' + e2.message)
+
+    // 3. reseta matches
+    const { error: e3 } = await sb.from('matches').update({
+      status:         'scheduled',
+      home_score:     null,
+      away_score:     null,
+      home_score_90:  null,
+      away_score_90:  null,
+      winner_team_id: null,
+      result_source:  null,
+      result_set_at:  null,
+    }).neq('id', 0)
+    if (e3) throw new Error('matches: ' + e3.message)
+
+    // 4. reseta rankings
+    const { error: e4 } = await sb.from('ranking_daily').delete().neq('id', 0)
+    if (e4) throw new Error('ranking_daily: ' + e4.message)
+
+    const { error: e5 } = await sb.from('ranking_phase').delete().neq('id', 0)
+    if (e5) throw new Error('ranking_phase: ' + e5.message)
+
+    const { error: e6 } = await sb.from('ranking_overall').delete().neq('user_id', '00000000-0000-0000-0000-000000000000')
+    if (e6) throw new Error('ranking_overall: ' + e6.message)
+
+    ok('Tudo resetado com sucesso!')
+    setTimeout(() => renderAdmin(), 800)
+  } catch (e) {
+    err('Erro: ' + e.message)
+    btn.disabled = false; btn.textContent = 'Resetar tudo'
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// REALTIME — atualiza placar dos jogos em tempo real
+// ════════════════════════════════════════════════════════════════
+sb.channel('matches-live')
+  .on('postgres_changes', { event:'UPDATE', schema:'public', table:'matches' }, () => {
+    const hash = window.location.hash.replace('#','')
+    if (hash === 'dashboard') renderDashboard()
+    if (hash === 'jogos')     renderJogos()
+  })
+  .subscribe()
+
+sb.channel('rankings-live')
+  .on('postgres_changes', { event:'*', schema:'public', table:'ranking_overall' }, () => {
+    const hash = window.location.hash.replace('#','')
+    if (hash === 'rankings')  renderRankings()
+    if (hash === 'dashboard') renderDashboard()
+  })
+  .subscribe()
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(e => console.warn('SW:', e))
+  })
+}
+</script>
+</body>
+</html>
