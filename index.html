@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>BomberBET — Bolão Copa 2026</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a6b3a">
+<meta name="theme-color" content="#1a6b3a" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a6b3a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="BomberBET">
 <link rel="apple-touch-icon" href="logo_192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -218,6 +219,11 @@ window.openPicksModal = function(){ /* stub — aguarda módulo carregar */ setT
 window.closePicksModal = function(){ document.getElementById('modal-picks')?.classList.add('hidden'); document.body.style.overflow='' }
 window.closePicks = function(e){ if(e.target.id==='modal-picks') window.closePicksModal() }
 </script>
+<!-- pull to refresh indicator -->
+<div id="pull-refresh-indicator" style="position:fixed;top:16px;left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity 0.15s;pointer-events:none">
+  <div id="pull-refresh-icon" style="width:32px;height:32px;border-radius:50%;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.15)">↻</div>
+</div>
+
 <!-- navbar -->
 <nav id="navbar" style="display:none">
   <div class="nb-inner">
@@ -1973,6 +1979,48 @@ sb.channel('rankings-live')
   })
   .subscribe()
 </script>
+
+<!-- pull to refresh -->
+<script>
+  let pullingSensibility = 450;
+  let startY = 0, pulling = false;
+  const ptrEl  = document.getElementById('pull-refresh-indicator');
+  const ptrIcon = document.getElementById('pull-refresh-icon');
+
+  document.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    pulling = (document.documentElement.scrollTop === 0 || document.body.scrollTop === 0);
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const diff = e.touches[0].clientY - startY;
+    if (diff <= 0) return;
+    const progress = Math.min(diff / pullingSensibility, 1);
+    ptrEl.style.opacity = progress;
+    ptrIcon.style.transform = `rotate(${progress * 270}deg)`;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!pulling) return;
+    const diff = e.changedTouches[0].clientY - startY;
+    if (diff > pullingSensibility) {
+      ptrIcon.style.transition = 'transform 0.3s linear';
+      ptrIcon.style.transform = 'rotate(720deg)';
+      setTimeout(() => location.reload(), 300);
+    } else {
+      ptrEl.style.opacity = 0;
+      ptrIcon.style.transform = 'rotate(0deg)';
+    }
+    pulling = false;
+  }, { passive: true });
+</script>
+
+<!-- copyright -->
+<div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.6
+</div>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
