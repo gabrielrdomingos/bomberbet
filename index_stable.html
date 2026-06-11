@@ -534,10 +534,9 @@ async function renderDashboard() {
   const matchesHtml = !matches?.length
     ? '<div class="empty">Sem jogos hoje.</div>'
     : matches.map(m => {
-        const pick         = pm[m.id]
-        const prazoFechou  = new Date(m.picks_close_at) <= now
-        const kickoffPassed = new Date(m.kickoff_at) <= now
-        const fin          = m.status === 'finished'
+        const pick       = pm[m.id]
+        const prazoFechou = new Date(m.picks_close_at) <= now
+        const fin        = m.status === 'finished'
 
         // meu palpite
         let pickInfo = ''
@@ -594,7 +593,7 @@ async function renderDashboard() {
           <div class="mrow" style="display:block;padding:.875rem 0">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem">
               <span class="muted small">${fmtTime(m.kickoff_at)}</span>
-              ${fin ? '<span class="badge bg" style="font-size:.65rem">Finalizado ✓</span>' : kickoffPassed ? '<span class="badge bo" style="font-size:.65rem">Em andamento</span>' : '<span class="badge bx" style="font-size:.65rem">Em breve</span>'}
+              ${fin ? '<span class="badge bg" style="font-size:.65rem">Finalizado ✓</span>' : prazoFechou ? '<span class="badge bo" style="font-size:.65rem">Em andamento</span>' : '<span class="badge bx" style="font-size:.65rem">Em breve</span>'}
             </div>
             <div class="mrow" style="padding:0;border:none">
               <div class="mteam h">${teamName(m,'home')}</div>
