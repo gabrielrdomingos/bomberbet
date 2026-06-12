@@ -456,14 +456,11 @@ function teamName(m, side, withFlag=true, layout='flag-left') {
 }
 
 function matchScoreHtml(m) {
-  // mostra bandeiras ao lado de cada placar (esquerda = casa, direita = fora)
-  const hFlag = m.home_team?.code ? flag(m.home_team.code,20) : ''
-  const aFlag = m.away_team?.code ? flag(m.away_team.code,20) : ''
   if (m.status === 'finished')
-    return `<div class="mscore">${hFlag}<span class="mscore-num">${m.home_score}</span><span class="x">×</span><span class="mscore-num">${m.away_score}</span>${aFlag}</div>`
+    return `<div class="mscore"><span class="mscore-num">${m.home_score}</span><span class="x">×</span><span class="mscore-num">${m.away_score}</span></div>`
   if (m.home_score != null && m.away_score != null)
-    return `<div class="mscore" style="color:var(--gold)">${hFlag}<span class="mscore-num">${m.home_score}</span><span class="x" style="color:var(--t3)">×</span><span class="mscore-num">${m.away_score}</span>${aFlag}</div>`
-  return `<div class="mscore pend">${hFlag}<span style="margin:0 .4rem">${fmtTime(m.kickoff_at)}</span>${aFlag}</div>`
+    return `<div class="mscore" style="color:var(--gold)"><span class="mscore-num">${m.home_score}</span><span class="x" style="color:var(--t3)">×</span><span class="mscore-num">${m.away_score}</span></div>`
+  return `<div class="mscore pend">${fmtTime(m.kickoff_at)}</div>`
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -2050,7 +2047,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.10
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.11
 </div>
 
 <script>
