@@ -305,6 +305,20 @@ const fmtTime = iso => new Date(iso).toLocaleTimeString('pt-BR',{timeZone:TZ,hou
 const fmtDate = iso => new Date(iso).toLocaleDateString('pt-BR',{timeZone:TZ,day:'2-digit',month:'2-digit'})
 const fmtDayFull = iso => { const s = new Date(iso).toLocaleDateString('pt-BR',{timeZone:TZ,weekday:'long',day:'2-digit',month:'long'}); return s.replace(/ De /g,' de ').replace(/^(\w)/, m => m.toUpperCase()) }
 const todayStr  = () => new Date().toLocaleDateString('sv-SE',{timeZone:TZ})
+// ── device detection ─────────────────────────────────────────
+const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+
+// emoji flag map (mobile only)
+const _emojiMap = {
+  BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',ESP:'🇪🇸',GER:'🇩🇪',POR:'🇵🇹',NED:'🇳🇱',
+  BEL:'🇧🇪',CRO:'🇭🇷',URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JAP:'🇯🇵',
+  KOR:'🇰🇷',AUS:'🇦🇺',SUI:'🇨🇭',DEN:'🇩🇰',NOR:'🇳🇴',SWE:'🇸🇪',AUT:'🇦🇹',CZE:'🇨🇿',
+  TUR:'🇹🇷',POL:'🇵🇱',MAR:'🇲🇦',SEN:'🇸🇳',GHA:'🇬🇭',CIV:'🇨🇮',EGY:'🇪🇬',TUN:'🇹🇳',
+  ALG:'🇩🇿',RSA:'🇿🇦',NGA:'🇳🇬',CMR:'🇨🇲',COD:'🇨🇩',CPV:'🇨🇻',IRN:'🇮🇷',KSA:'🇸🇦',
+  IRQ:'🇮🇶',JOR:'🇯🇴',QAT:'🇶🇦',UZB:'🇺🇿',JPN:'🇯🇵',ECU:'🇪🇨',PAR:'🇵🇾',PAN:'🇵🇦',
+  HAI:'🇭🇹',CUW:'🇨🇼',NZL:'🇳🇿',BIH:'🇧🇦',SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+}
+
 // flag image from country code (flagcdn.com — works on all OS including Windows)
 const _flagMap = {
   // football codes -> ISO 3166-1 alpha-2
@@ -325,6 +339,10 @@ const _flagMap = {
 function flag(code, size=20) {
   if (!code) return ''
   const cc = code.toUpperCase()
+  if (IS_MOBILE) {
+    const emoji = _emojiMap[cc]
+    if (emoji) return `<span style="font-size:${size}px;vertical-align:middle;line-height:1">${emoji}</span>`
+  }
   const iso = _flagMap[cc] ?? cc.toLowerCase()
   return `<img src="https://flagcdn.com/w${size}/${iso}.png" width="${size}" height="${Math.round(size*0.75)}" style="vertical-align:middle;border-radius:2px" alt="${code}" onerror="this.style.display='none'">`
 }
@@ -424,12 +442,17 @@ function loading() {
   setContent('<div class="lp"><span class="spin"></span> Carregando...</div>')
 }
 
-function teamName(m, side, withFlag=true) {
+// layout='flag-left'  → 🏳 Nome  (mercado, padrão antigo)
+// layout='flag-right' → Nome 🏳  (início, palpites, jogos — home)
+// layout='flag-left-mirrored' → 🏳 Nome (away — espelhado do home)
+function teamName(m, side, withFlag=true, layout='flag-left') {
   const t = side === 'home' ? m.home_team : m.away_team
   const ph = side === 'home' ? m.placeholder_home : m.placeholder_away
   const name = t?.name ?? ph ?? '?'
   if (!withFlag || !t?.code) return name
-  return flag(t.code) + ' ' + name
+  const f = flag(t.code)
+  if (layout === 'flag-right') return name + ' ' + f
+  return f + ' ' + name
 }
 
 function matchScoreHtml(m) {
@@ -612,9 +635,9 @@ async function renderDashboard() {
               ${fin ? '<span class="badge bg" style="font-size:.65rem">Finalizado ✓</span>' : kickoffPassed ? '<span class="badge bo" style="font-size:.65rem">Em andamento</span>' : '<span class="badge bx" style="font-size:.65rem">Em breve</span>'}
             </div>
             <div class="mrow" style="padding:0;border:none">
-              <div class="mteam h">${teamName(m,'home',false)}</div>
+              <div class="mteam h">${teamName(m,'home',true,'flag-right')}</div>
               ${matchScoreHtml(m)}
-              <div class="mteam a">${teamName(m,'away',false)}</div>
+              <div class="mteam a">${teamName(m,'away',true,'flag-left')}</div>
             </div>
             ${pickInfo}
             ${allPicksHtml}
@@ -783,7 +806,7 @@ async function loadPicksModal() {
         return `
           <div class="prow ${locked}" id="prow-${m.id}">
             <div class="prow-main">
-              <div class="pteam h">${teamName(m,'home')}</div>
+              <div class="pteam h">${teamName(m,'home',true,'flag-right')}</div>
               <div class="pinputs">
                 <input class="si ${saved}" type="number" min="0" max="20"
                        id="ph-${m.id}" value="${hn}" placeholder="0"
@@ -795,7 +818,7 @@ async function loadPicksModal() {
                        ${!open?'disabled':''}
                        oninput="autoSavePick(${m.id})">
               </div>
-              <div class="pteam a">${teamName(m,'away')}</div>
+              <div class="pteam a">${teamName(m,'away',true,'flag-left')}</div>
             </div>
             ${koExtra}
             ${statusMsg}
@@ -928,7 +951,7 @@ async function renderPalpites() {
           return `
             <div class="prow ${locked}" id="prow-${m.id}">
               <div class="prow-main">
-                <div class="pteam h">${teamName(m,'home')}</div>
+                <div class="pteam h">${teamName(m,'home',true,'flag-right')}</div>
                 <div class="pinputs">
                   <input class="si ${p?'saved':''}" type="number" min="0" max="20"
                          id="ph-${m.id}" value="${hn}" placeholder="0"
@@ -940,7 +963,7 @@ async function renderPalpites() {
                          ${!open?'disabled':''}
                          oninput="autoSavePick(${m.id})">
                 </div>
-                <div class="pteam a">${teamName(m,'away')}</div>
+                <div class="pteam a">${teamName(m,'away',true,'flag-left')}</div>
               </div>
               ${koExtra}
               ${statusMsg}
@@ -1374,9 +1397,9 @@ async function renderJogos() {
       <div class="card" style="margin-bottom:.75rem">
         ${ms.map(m => `
           <div class="mrow">
-            <div class="mteam h">${teamName(m,'home',false)}</div>
+            <div class="mteam h">${teamName(m,'home',true,'flag-right')}</div>
             ${matchScoreHtml(m)}
-            <div class="mteam a">${teamName(m,'away',false)}</div>
+            <div class="mteam a">${teamName(m,'away',true,'flag-left')}</div>
           </div>
         `).join('')}
       </div>
@@ -2027,7 +2050,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.8
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.9
 </div>
 
 <script>
