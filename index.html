@@ -1301,12 +1301,12 @@ async function renderRankings() {
     <div id="rank-content">${renderTabs()}</div>
   `)
 
-  window._rankData = { tabs }
+  window._rankData = { tabs, pMap }
 }
 
 window.switchRankTab = function(tab) {
   _rankTab = tab
-  const { tabs } = window._rankData
+  const { tabs, pMap } = window._rankData
   const active = tabs.find(t=>t.id===tab)
 
   function tableHtml(rows) {
@@ -1320,7 +1320,7 @@ window.switchRankTab = function(tab) {
             const posClass = r.position===1?'p1':r.position===2?'p2':r.position===3?'p3':''
             return `<tr class="${isMe?'me':''}">
               <td><span class="rpos ${posClass}">${r.position}º</span></td>
-              <td>${window._pMap?.[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
+              <td>${pMap?.[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
               <td class="rpts tr">${r.points}</td>
             </tr>`
           }).join('')}
