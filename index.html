@@ -88,6 +88,10 @@ select.fi{cursor:pointer}
 .mscore.pend{color:var(--t3);font-weight:400;font-size:.82rem}
 .minfo{font-size:.7rem;color:var(--t3);text-align:center}
 
+/* garante exibição de bandeiras ao lado do placar */
+.mscore img{display:inline-block;height:auto;max-height:22px;border-radius:2px;margin:0 6px}
+.mscore .mscore-num{font-weight:700}
+
 /* ── palpite input ───────────────────────────────────────────── */
 .prow{padding:.875rem 0;border-bottom:1px solid var(--line)}
 .prow:last-child{border-bottom:none}
@@ -429,11 +433,14 @@ function teamName(m, side, withFlag=true) {
 }
 
 function matchScoreHtml(m) {
+  // mostra bandeiras ao lado de cada placar (esquerda = casa, direita = fora)
+  const hFlag = m.home_team?.code ? flag(m.home_team.code,20) : ''
+  const aFlag = m.away_team?.code ? flag(m.away_team.code,20) : ''
   if (m.status === 'finished')
-    return `<div class="mscore">${m.home_score}<span class="x">×</span>${m.away_score}</div>`
+    return `<div class="mscore">${hFlag}<span class="mscore-num">${m.home_score}</span><span class="x">×</span><span class="mscore-num">${m.away_score}</span>${aFlag}</div>`
   if (m.home_score != null && m.away_score != null)
-    return `<div class="mscore" style="color:var(--gold)">${m.home_score}<span class="x" style="color:var(--t3)">×</span>${m.away_score}</div>`
-  return `<div class="mscore pend">${fmtTime(m.kickoff_at)}</div>`
+    return `<div class="mscore" style="color:var(--gold)">${hFlag}<span class="mscore-num">${m.home_score}</span><span class="x" style="color:var(--t3)">×</span><span class="mscore-num">${m.away_score}</span>${aFlag}</div>`
+  return `<div class="mscore pend">${hFlag}<span style="margin:0 .4rem">${fmtTime(m.kickoff_at)}</span>${aFlag}</div>`
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -605,9 +612,9 @@ async function renderDashboard() {
               ${fin ? '<span class="badge bg" style="font-size:.65rem">Finalizado ✓</span>' : kickoffPassed ? '<span class="badge bo" style="font-size:.65rem">Em andamento</span>' : '<span class="badge bx" style="font-size:.65rem">Em breve</span>'}
             </div>
             <div class="mrow" style="padding:0;border:none">
-              <div class="mteam h">${teamName(m,'home')}</div>
+              <div class="mteam h">${teamName(m,'home',false)}</div>
               ${matchScoreHtml(m)}
-              <div class="mteam a">${teamName(m,'away')}</div>
+              <div class="mteam a">${teamName(m,'away',false)}</div>
             </div>
             ${pickInfo}
             ${allPicksHtml}
@@ -1367,9 +1374,9 @@ async function renderJogos() {
       <div class="card" style="margin-bottom:.75rem">
         ${ms.map(m => `
           <div class="mrow">
-            <div class="mteam h">${teamName(m,'home')}</div>
+            <div class="mteam h">${teamName(m,'home',false)}</div>
             ${matchScoreHtml(m)}
-            <div class="mteam a">${teamName(m,'away')}</div>
+            <div class="mteam a">${teamName(m,'away',false)}</div>
           </div>
         `).join('')}
       </div>
