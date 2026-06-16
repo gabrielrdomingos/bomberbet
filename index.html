@@ -543,6 +543,33 @@ async function renderDashboard() {
   const rp = rpArr?.[0]; const rd = rdArr?.[0]
   const profileMap = Object.fromEntries((profiles??[]).map(p=>[p.id, p.display_name]))
 
+  // busca jogos abertos (qualquer dia) ainda sem palpite do usuário, para o aviso de prazo
+  const { data: openMatches } = await sb.from('matches')
+    .select('id,picks_close_at')
+    .eq('status','scheduled')
+    .lte('picks_open_at', now.toISOString())
+    .gt('picks_close_at', now.toISOString())
+
+  let warningHtml = ''
+  if (openMatches?.length) {
+    const { data: myOpenPicks } = await sb.from('match_picks')
+      .select('match_id')
+      .eq('user_id', SESSION.user.id)
+      .in('match_id', openMatches.map(m=>m.id))
+    const pickedSet = new Set((myOpenPicks??[]).map(p=>p.match_id))
+    const pending = openMatches.filter(m => !pickedSet.has(m.id))
+    if (pending.length) {
+      const soonest = pending.reduce((a,b) => new Date(a.picks_close_at) < new Date(b.picks_close_at) ? a : b)
+      const diff = new Date(soonest.picks_close_at) - now
+      const hh = Math.floor(diff / 3600000)
+      const mm = Math.floor((diff % 3600000) / 60000)
+      warningHtml = `
+        <div class="card" style="margin-bottom:1rem;background:var(--gold-s);border-color:var(--gold)" id="dash-pick-warning">
+          <span style="font-size:.85rem;color:var(--gold)">⚠️ Há palpites em aberto. Você tem <strong>${hh}h ${String(mm).padStart(2,'0')}m</strong> restantes para fazer seu palpite.</span>
+        </div>`
+    }
+  }
+
   // busca meus palpites
   let myPicks = []
   // busca todos os palpites dos jogos de hoje (para mostrar após prazo)
@@ -649,6 +676,8 @@ async function renderDashboard() {
       <h1>Olá, ${PROFILE.display_name.split(' ')[0]} 👋</h1>
       ${phase2 ? `<p style="margin-top:.35rem"><span class="badge bg">⚡ ${phase2.name}</span></p>` : ''}
     </div>
+
+    ${warningHtml}
 
     <div class="rmini">
       <div class="rbox"><span class="rl">Hoje</span><span class="rn">${pos(rd?.position)}</span><div class="rp">${rd?.points??0} pts</div></div>
@@ -2040,7 +2069,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.13
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.14
 </div>
 
 <script>
