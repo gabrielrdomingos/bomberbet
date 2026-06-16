@@ -586,9 +586,11 @@ async function renderDashboard() {
             : `<div class="pstatus" style="color:var(--t3);font-size:.72rem;text-align:center;margin-top:.25rem">Sem palpite</div>`
         }
 
-        // palpites de todos (só após prazo fechar)
+        // palpites de todos: mostra se prazo fechou OU se todos já palpitaram
+        const totalParticipantes = Object.keys(profileMap).length
+        const todosJaPalpitaram  = (allPicksMap[m.id]?.length ?? 0) >= totalParticipantes && totalParticipantes > 0
         let allPicksHtml = ''
-        if (prazoFechou && allPicksMap[m.id]?.length) {
+        if ((prazoFechou || todosJaPalpitaram) && allPicksMap[m.id]?.length) {
           const rows = allPicksMap[m.id]
             .sort((a,b) => {
               // meu palpite primeiro
@@ -2047,7 +2049,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.11
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.12
 </div>
 
 <script>

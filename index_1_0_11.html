@@ -3,15 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>BomberBET — Bolão Copa 2026</title>
+<title>BomberBET</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1a6b3a">
+<meta name="theme-color" content="#1a6b3a" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a6b3a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="BomberBET">
 <link rel="apple-touch-icon" href="logo_192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="logo_192.png">
+<link rel="shortcut icon" href="logo_192.png">
 <style>
 /* ── reset & tokens ──────────────────────────────────────────── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -84,6 +87,10 @@ select.fi{cursor:pointer}
 .mscore .x{color:var(--t3);font-weight:400}
 .mscore.pend{color:var(--t3);font-weight:400;font-size:.82rem}
 .minfo{font-size:.7rem;color:var(--t3);text-align:center}
+
+/* garante exibição de bandeiras ao lado do placar */
+.mscore img{display:inline-block;height:auto;max-height:22px;border-radius:2px;margin:0 6px}
+.mscore .mscore-num{font-weight:700}
 
 /* ── palpite input ───────────────────────────────────────────── */
 .prow{padding:.875rem 0;border-bottom:1px solid var(--line)}
@@ -218,6 +225,11 @@ window.openPicksModal = function(){ /* stub — aguarda módulo carregar */ setT
 window.closePicksModal = function(){ document.getElementById('modal-picks')?.classList.add('hidden'); document.body.style.overflow='' }
 window.closePicks = function(e){ if(e.target.id==='modal-picks') window.closePicksModal() }
 </script>
+<!-- pull to refresh indicator -->
+<div id="pull-refresh-indicator" style="position:fixed;top:16px;left:0;right:0;display:flex;justify-content:center;align-items:center;z-index:999;opacity:0;transition:opacity 0.15s;pointer-events:none">
+  <div id="pull-refresh-icon" style="width:32px;height:32px;border-radius:50%;background:var(--white);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.15)">↻</div>
+</div>
+
 <!-- navbar -->
 <nav id="navbar" style="display:none">
   <div class="nb-inner">
@@ -293,6 +305,20 @@ const fmtTime = iso => new Date(iso).toLocaleTimeString('pt-BR',{timeZone:TZ,hou
 const fmtDate = iso => new Date(iso).toLocaleDateString('pt-BR',{timeZone:TZ,day:'2-digit',month:'2-digit'})
 const fmtDayFull = iso => { const s = new Date(iso).toLocaleDateString('pt-BR',{timeZone:TZ,weekday:'long',day:'2-digit',month:'long'}); return s.replace(/ De /g,' de ').replace(/^(\w)/, m => m.toUpperCase()) }
 const todayStr  = () => new Date().toLocaleDateString('sv-SE',{timeZone:TZ})
+// ── device detection ─────────────────────────────────────────
+const IS_MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+
+// emoji flag map (mobile only)
+const _emojiMap = {
+  BRA:'🇧🇷',ARG:'🇦🇷',FRA:'🇫🇷',ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿',ESP:'🇪🇸',GER:'🇩🇪',POR:'🇵🇹',NED:'🇳🇱',
+  BEL:'🇧🇪',CRO:'🇭🇷',URU:'🇺🇾',COL:'🇨🇴',MEX:'🇲🇽',USA:'🇺🇸',CAN:'🇨🇦',JAP:'🇯🇵',
+  KOR:'🇰🇷',AUS:'🇦🇺',SUI:'🇨🇭',DEN:'🇩🇰',NOR:'🇳🇴',SWE:'🇸🇪',AUT:'🇦🇹',CZE:'🇨🇿',
+  TUR:'🇹🇷',POL:'🇵🇱',MAR:'🇲🇦',SEN:'🇸🇳',GHA:'🇬🇭',CIV:'🇨🇮',EGY:'🇪🇬',TUN:'🇹🇳',
+  ALG:'🇩🇿',RSA:'🇿🇦',NGA:'🇳🇬',CMR:'🇨🇲',COD:'🇨🇩',CPV:'🇨🇻',IRN:'🇮🇷',KSA:'🇸🇦',
+  IRQ:'🇮🇶',JOR:'🇯🇴',QAT:'🇶🇦',UZB:'🇺🇿',JPN:'🇯🇵',ECU:'🇪🇨',PAR:'🇵🇾',PAN:'🇵🇦',
+  HAI:'🇭🇹',CUW:'🇨🇼',NZL:'🇳🇿',BIH:'🇧🇦',SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+}
+
 // flag image from country code (flagcdn.com — works on all OS including Windows)
 const _flagMap = {
   // football codes -> ISO 3166-1 alpha-2
@@ -313,6 +339,10 @@ const _flagMap = {
 function flag(code, size=20) {
   if (!code) return ''
   const cc = code.toUpperCase()
+  if (IS_MOBILE) {
+    const emoji = _emojiMap[cc]
+    if (emoji) return `<span style="font-size:${size}px;vertical-align:middle;line-height:1">${emoji}</span>`
+  }
   const iso = _flagMap[cc] ?? cc.toLowerCase()
   return `<img src="https://flagcdn.com/w${size}/${iso}.png" width="${size}" height="${Math.round(size*0.75)}" style="vertical-align:middle;border-radius:2px" alt="${code}" onerror="this.style.display='none'">`
 }
@@ -412,19 +442,24 @@ function loading() {
   setContent('<div class="lp"><span class="spin"></span> Carregando...</div>')
 }
 
-function teamName(m, side, withFlag=true) {
+// layout='flag-left'  → 🏳 Nome  (mercado, padrão antigo)
+// layout='flag-right' → Nome 🏳  (início, palpites, jogos — home)
+// layout='flag-left-mirrored' → 🏳 Nome (away — espelhado do home)
+function teamName(m, side, withFlag=true, layout='flag-left') {
   const t = side === 'home' ? m.home_team : m.away_team
   const ph = side === 'home' ? m.placeholder_home : m.placeholder_away
   const name = t?.name ?? ph ?? '?'
   if (!withFlag || !t?.code) return name
-  return flag(t.code) + ' ' + name
+  const f = flag(t.code)
+  if (layout === 'flag-right') return name + ' ' + f
+  return f + ' ' + name
 }
 
 function matchScoreHtml(m) {
   if (m.status === 'finished')
-    return `<div class="mscore">${m.home_score}<span class="x">×</span>${m.away_score}</div>`
+    return `<div class="mscore"><span class="mscore-num">${m.home_score}</span><span class="x">×</span><span class="mscore-num">${m.away_score}</span></div>`
   if (m.home_score != null && m.away_score != null)
-    return `<div class="mscore" style="color:var(--gold)">${m.home_score}<span class="x" style="color:var(--t3)">×</span>${m.away_score}</div>`
+    return `<div class="mscore" style="color:var(--gold)"><span class="mscore-num">${m.home_score}</span><span class="x" style="color:var(--t3)">×</span><span class="mscore-num">${m.away_score}</span></div>`
   return `<div class="mscore pend">${fmtTime(m.kickoff_at)}</div>`
 }
 
@@ -597,9 +632,9 @@ async function renderDashboard() {
               ${fin ? '<span class="badge bg" style="font-size:.65rem">Finalizado ✓</span>' : kickoffPassed ? '<span class="badge bo" style="font-size:.65rem">Em andamento</span>' : '<span class="badge bx" style="font-size:.65rem">Em breve</span>'}
             </div>
             <div class="mrow" style="padding:0;border:none">
-              <div class="mteam h">${teamName(m,'home')}</div>
+              <div class="mteam h">${teamName(m,'home',true,'flag-right')}</div>
               ${matchScoreHtml(m)}
-              <div class="mteam a">${teamName(m,'away')}</div>
+              <div class="mteam a">${teamName(m,'away',true,'flag-left')}</div>
             </div>
             ${pickInfo}
             ${allPicksHtml}
@@ -768,7 +803,7 @@ async function loadPicksModal() {
         return `
           <div class="prow ${locked}" id="prow-${m.id}">
             <div class="prow-main">
-              <div class="pteam h">${teamName(m,'home')}</div>
+              <div class="pteam h">${teamName(m,'home',true,'flag-right')}</div>
               <div class="pinputs">
                 <input class="si ${saved}" type="number" min="0" max="20"
                        id="ph-${m.id}" value="${hn}" placeholder="0"
@@ -780,7 +815,7 @@ async function loadPicksModal() {
                        ${!open?'disabled':''}
                        oninput="autoSavePick(${m.id})">
               </div>
-              <div class="pteam a">${teamName(m,'away')}</div>
+              <div class="pteam a">${teamName(m,'away',true,'flag-left')}</div>
             </div>
             ${koExtra}
             ${statusMsg}
@@ -913,7 +948,7 @@ async function renderPalpites() {
           return `
             <div class="prow ${locked}" id="prow-${m.id}">
               <div class="prow-main">
-                <div class="pteam h">${teamName(m,'home')}</div>
+                <div class="pteam h">${teamName(m,'home',true,'flag-right')}</div>
                 <div class="pinputs">
                   <input class="si ${p?'saved':''}" type="number" min="0" max="20"
                          id="ph-${m.id}" value="${hn}" placeholder="0"
@@ -925,7 +960,7 @@ async function renderPalpites() {
                          ${!open?'disabled':''}
                          oninput="autoSavePick(${m.id})">
                 </div>
-                <div class="pteam a">${teamName(m,'away')}</div>
+                <div class="pteam a">${teamName(m,'away',true,'flag-left')}</div>
               </div>
               ${koExtra}
               ${statusMsg}
@@ -1293,12 +1328,12 @@ async function renderRankings() {
     <div id="rank-content">${renderTabs()}</div>
   `)
 
-  window._rankData = { tabs }
+  window._rankData = { tabs, pMap }
 }
 
 window.switchRankTab = function(tab) {
   _rankTab = tab
-  const { tabs } = window._rankData
+  const { tabs, pMap } = window._rankData
   const active = tabs.find(t=>t.id===tab)
 
   function tableHtml(rows) {
@@ -1312,7 +1347,7 @@ window.switchRankTab = function(tab) {
             const posClass = r.position===1?'p1':r.position===2?'p2':r.position===3?'p3':''
             return `<tr class="${isMe?'me':''}">
               <td><span class="rpos ${posClass}">${r.position}º</span></td>
-              <td>${window._pMap?.[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
+              <td>${pMap?.[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
               <td class="rpts tr">${r.points}</td>
             </tr>`
           }).join('')}
@@ -1359,9 +1394,9 @@ async function renderJogos() {
       <div class="card" style="margin-bottom:.75rem">
         ${ms.map(m => `
           <div class="mrow">
-            <div class="mteam h">${teamName(m,'home')}</div>
+            <div class="mteam h">${teamName(m,'home',true,'flag-right')}</div>
             ${matchScoreHtml(m)}
-            <div class="mteam a">${teamName(m,'away')}</div>
+            <div class="mteam a">${teamName(m,'away',true,'flag-left')}</div>
           </div>
         `).join('')}
       </div>
@@ -1973,6 +2008,48 @@ sb.channel('rankings-live')
   })
   .subscribe()
 </script>
+
+<!-- pull to refresh -->
+<script>
+  let pullingSensibility = 450;
+  let startY = 0, pulling = false;
+  const ptrEl  = document.getElementById('pull-refresh-indicator');
+  const ptrIcon = document.getElementById('pull-refresh-icon');
+
+  document.addEventListener('touchstart', e => {
+    startY = e.touches[0].clientY;
+    pulling = (document.documentElement.scrollTop === 0 || document.body.scrollTop === 0);
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!pulling) return;
+    const diff = e.touches[0].clientY - startY;
+    if (diff <= 0) return;
+    const progress = Math.min(diff / pullingSensibility, 1);
+    ptrEl.style.opacity = progress;
+    ptrIcon.style.transform = `rotate(${progress * 270}deg)`;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!pulling) return;
+    const diff = e.changedTouches[0].clientY - startY;
+    if (diff > pullingSensibility) {
+      ptrIcon.style.transition = 'transform 0.3s linear';
+      ptrIcon.style.transform = 'rotate(720deg)';
+      setTimeout(() => location.reload(), 300);
+    } else {
+      ptrEl.style.opacity = 0;
+      ptrIcon.style.transform = 'rotate(0deg)';
+    }
+    pulling = false;
+  }, { passive: true });
+</script>
+
+<!-- copyright -->
+<div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.11
+</div>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
