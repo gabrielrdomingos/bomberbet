@@ -199,6 +199,62 @@ select.fi{cursor:pointer}
   .rmini{gap:.5rem}
 }
 
+/* ── grupos ──────────────────────────────────────────────────── */
+.grp-card{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);margin-bottom:1rem}
+.grp-hd{background:var(--green);color:#fff;font-size:.75rem;font-weight:700;padding:.45rem .75rem;letter-spacing:.05em}
+.grp-table{width:100%;border-collapse:collapse;font-size:.82rem;table-layout:fixed}
+.grp-table th{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--t3);padding:.38rem .5rem;border-bottom:1px solid var(--line);text-align:center}
+.grp-table th:first-child{text-align:left;padding-left:.75rem;width:50%}
+.grp-table td{padding:.5rem .5rem;border-bottom:1px solid var(--line);text-align:center;color:var(--t2)}
+.grp-table td:first-child{text-align:left;padding-left:.5rem;font-weight:500;color:var(--text)}
+.grp-team{display:flex;align-items:center;gap:.35rem;white-space:nowrap;overflow:hidden}
+.grp-table tr:last-child td{border-bottom:none}
+.grp-table tr.qualified td{background:var(--green-s)}
+.grp-table tr.qualified td:first-child{border-left:3px solid var(--green)}
+.grp-table tr.live-row td{background:#fff8f0}
+.grp-table tr.live-row td:first-child{border-left:3px solid var(--gold)}
+.grp-pts{font-weight:700;color:var(--text)}
+.grp-pos{font-size:.7rem;color:var(--t3);min-width:1rem;display:inline-block;text-align:right}
+.live-dot{display:inline-block;width:.45rem;height:.45rem;border-radius:50%;background:var(--gold);animation:pulse .9s ease-in-out infinite;margin-left:.3rem;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+/* ── chaveamento ─────────────────────────────────────────────── */
+.bracket-title{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);margin:1.5rem 0 .65rem;padding-bottom:.4rem;border-bottom:1px solid var(--line)}
+.bracket-round{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-bottom:.5rem}
+@media(max-width:480px){.bracket-round{grid-template-columns:1fr}}
+.bracket-match{background:var(--white);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.bracket-team{display:flex;align-items:center;gap:.45rem;padding:.45rem .65rem;font-size:.82rem;font-weight:500}
+.bracket-team+.bracket-team{border-top:1px solid var(--line)}
+.bracket-team.tbd{color:var(--t3);font-style:italic}
+.bracket-team.qualified{background:var(--green-s);font-weight:600}
+
+/* ── estatísticas ────────────────────────────────────────────── */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:1.5rem}
+.stat-box{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:.75rem;text-align:center;box-shadow:var(--sh)}
+.stat-box .sl{font-size:.62rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--t3);display:block;margin-bottom:.25rem}
+.stat-box .sv{font-size:1.3rem;font-weight:700;color:var(--green);display:block;line-height:1}
+.stat-box .ss{font-size:.7rem;color:var(--t3);margin-top:.15rem}
+.evo-wrap{background:var(--white);border:1px solid var(--line);border-radius:var(--r);padding:1rem;overflow-x:auto;margin-bottom:1.5rem}
+.evo-canvas{min-width:300px;width:100%;height:200px;display:block}
+.evo-legend{display:flex;flex-wrap:wrap;gap:.5rem .75rem;margin-top:.75rem}
+.evo-dot{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;margin-right:.25rem;flex-shrink:0}
+.evo-item{display:flex;align-items:center;font-size:.75rem;color:var(--t2)}
+.evo-item.me{font-weight:700;color:var(--text)}
+.hist-filter{display:flex;gap:.35rem;margin-bottom:.75rem;flex-wrap:wrap}
+.hist-filter button{padding:.3rem .7rem;border-radius:4px;border:1.5px solid var(--line);background:var(--white);font-size:.78rem;font-weight:600;color:var(--t2);cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s}
+.hist-filter button.active{border-color:var(--green);color:var(--green);background:var(--green-s)}
+.htable{width:100%;border-collapse:collapse;font-size:.82rem}
+.htable th{text-align:left;font-size:.66rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--t3);padding:.4rem .35rem .4rem 0;border-bottom:1px solid var(--line)}
+.htable td{padding:.55rem .35rem .55rem 0;border-bottom:1px solid var(--line);vertical-align:middle}
+.htable tr:last-child td{border-bottom:none}
+.htable .pts-ex{color:var(--gold);font-weight:700}
+.htable .pts-ok{color:var(--green);font-weight:700}
+.htable .pts-no{color:var(--t3)}
+.pick-chip{display:inline-block;padding:.1rem .4rem;border-radius:3px;font-size:.75rem;font-weight:600;background:var(--bg)}
+.pick-chip.ex{background:var(--gold-s);color:var(--gold)}
+.pick-chip.ok{background:var(--green-s);color:var(--green)}
+.pick-chip.no{background:#f0f0f0;color:var(--t3)}
+
 /* ── modal ───────────────────────────────────────────────────── */
 .modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;justify-content:center;margin:0;padding:0}
 .modal-bg.hidden{display:none!important}
@@ -344,7 +400,8 @@ function flag(code, size=20) {
     if (emoji) return `<span style="font-size:${size}px;vertical-align:middle;line-height:1">${emoji}</span>`
   }
   const iso = _flagMap[cc] ?? cc.toLowerCase()
-  return `<img src="https://flagcdn.com/w${size}/${iso}.png" width="${size}" height="${Math.round(size*0.75)}" style="vertical-align:middle;border-radius:2px" alt="${code}" onerror="this.style.display='none'">`
+  const sz = size < 20 ? 20 : size
+  return `<img src="https://flagcdn.com/w${sz}/${iso}.png" width="${size}" height="${Math.round(size*0.75)}" style="vertical-align:middle;border-radius:2px" alt="${code}" onerror="this.style.display='none'">`
 }
 const tomorrow  = () => { const d = new Date(); d.setDate(d.getDate()+1); return d.toLocaleDateString('sv-SE',{timeZone:TZ}) }
 const expired  = iso => new Date(iso) < new Date()
@@ -359,6 +416,7 @@ const ROUTES = {
   mercado:   renderMercado,
   rankings:  renderRankings,
   jogos:     renderJogos,
+  grupos:    renderGrupos,
   regras:    renderRegras,
   admin:     renderAdmin,
 }
@@ -415,6 +473,7 @@ function renderNavbar(active) {
     {r:'mercado',   label:'Mercado'},
     {r:'rankings',  label:'Rankings'},
     {r:'jogos',     label:'Jogos'},
+    {r:'grupos',    label:'Grupos'},
     {r:'regras',    label:'Regras'},
     ...(PROFILE?.is_admin ? [{r:'admin',label:'Admin',adm:true}] : []),
     {r:'_signout',  label:'Sair'},
@@ -523,24 +582,19 @@ async function renderDashboard() {
 
   const [
     { data: ro },
-    { data: rpArr },
-    { data: rdArr },
     { data: matches },
     { data: phase },
     { data: profiles },
   ] = await Promise.all([
-    sb.from('ranking_overall').select('points,position').eq('user_id',SESSION.user.id).limit(1),
-    sb.from('ranking_phase').select('points,position').eq('user_id',SESSION.user.id).eq('is_final',false).order('phase_id',{ascending:false}).limit(1),
-    sb.from('ranking_daily').select('points,position').eq('user_id',SESSION.user.id).eq('day',today).limit(1),
+    sb.from('ranking_overall').select('points,position').eq('user_id',SESSION.user.id).single(),
     sb.from('matches').select('id,kickoff_at,picks_close_at,status,home_score,away_score,placeholder_home,placeholder_away,home_team:home_team_id(name,code),away_team:away_team_id(name,code)')
       .gte('kickoff_at',`${today}T03:00:00Z`).lt('kickoff_at',`${tomorrow()}T03:00:00Z`).order('kickoff_at'),
     sb.from('phases').select('id,name').eq('status','active').limit(1),
     sb.from('profiles').select('id,display_name'),
   ])
 
-  const ro2  = Array.isArray(ro) ? ro?.[0] : ro
+  const ro2  = ro
   const phase2 = Array.isArray(phase) ? phase?.[0] : phase
-  const rp = rpArr?.[0]; const rd = rdArr?.[0]
   const profileMap = Object.fromEntries((profiles??[]).map(p=>[p.id, p.display_name]))
 
   // busca jogos abertos (qualquer dia) ainda sem palpite do usuário, para o aviso de prazo
@@ -679,10 +733,8 @@ async function renderDashboard() {
 
     ${warningHtml}
 
-    <div class="rmini">
-      <div class="rbox"><span class="rl">Hoje</span><span class="rn">${pos(rd?.position)}</span><div class="rp">${rd?.points??0} pts</div></div>
-      <div class="rbox"><span class="rl">Fase</span><span class="rn">${pos(rp?.position)}</span><div class="rp">${rp?.points??0} pts</div></div>
-      <div class="rbox"><span class="rl">Geral</span><span class="rn" style="color:var(--gold)">${pos(ro2?.position)}</span><div class="rp">${ro2?.points??0} pts</div></div>
+    <div class="rmini" style="grid-template-columns:1fr">
+      <div class="rbox"><span class="rl">Ranking Geral</span><span class="rn" style="color:var(--gold)">${pos(ro2?.position)}</span><div class="rp">${ro2?.points??0} pts</div></div>
     </div>
 
     <div class="sec">
@@ -1291,29 +1343,82 @@ async function renderRankings() {
 
   const [
     { data: overall },
-    { data: phaseRanks },
-    { data: dailyRanks },
     { data: profiles },
-    { data: activePhase },
+    { data: picks },
+    { data: pointsLog },
+    { data: matches },
   ] = await Promise.all([
     sb.from('ranking_overall').select('user_id,points,position').order('position'),
-    sb.from('ranking_phase').select('user_id,points,position,phase_id').eq('is_final',false).order('position'),
-    sb.from('ranking_daily').select('user_id,points,position').eq('day',todayStr()).order('position'),
     sb.from('profiles').select('id,display_name'),
-    sb.from('phases').select('id,name').eq('status','active').single(),
+    sb.from('match_picks').select('user_id,match_id,home_score,away_score'),
+    sb.from('points_log').select('user_id,match_id,points,event_type'),
+    sb.from('matches')
+      .select('id,kickoff_at,home_score,away_score,status,home_team:home_team_id(name),away_team:away_team_id(name)')
+      .eq('status','finished')
+      .order('kickoff_at'),
   ])
 
-  const pMap = Object.fromEntries((profiles??[]).map(p=>[p.id,p.display_name]))
+  const pMap    = Object.fromEntries((profiles??[]).map(p=>[p.id,p.display_name]))
+  const userList = profiles ?? []
+  const finished = matches ?? []
+  const nFin    = finished.length
+  const mMap    = Object.fromEntries(finished.map(m=>[m.id,m]))
+  const finishedIds = new Set(finished.map(m=>m.id))
 
-  function tableHtml(rows) {
+  // ── pontos por pick (via points_log) ────────────────────────
+  const plIdx = {}
+  for (const pl of pointsLog??[]) {
+    const key = pl.user_id+':'+pl.match_id
+    if (!plIdx[key]) plIdx[key] = { exact_count:0, correct_count:0, total_pts:0 }
+    if (pl.event_type === 'exact_score')    plIdx[key].exact_count++
+    if (pl.event_type === 'correct_winner') plIdx[key].correct_count++
+    plIdx[key].total_pts += pl.points
+  }
+
+  const finPicks = (picks??[])
+    .filter(p => finishedIds.has(p.match_id))
+    .map(p => {
+      const e = plIdx[p.user_id+':'+p.match_id] ?? { exact_count:0, correct_count:0, total_pts:0 }
+      return { ...p, pts_exact:e.exact_count, pts_correct:e.correct_count, points_earned:e.total_pts }
+    })
+
+  // ── stats por usuário ────────────────────────────────────────
+  const userStats = {}
+  for (const p of userList) userStats[p.id] = { exact:0, correct:0, wrong:0, points:0 }
+  for (const pick of finPicks) {
+    const s = userStats[pick.user_id]; if (!s) continue
+    s.points += pick.points_earned
+    s.exact   += pick.pts_exact
+    s.correct += pick.pts_correct
+    if (pick.pts_exact === 0 && pick.pts_correct === 0) s.wrong++
+  }
+
+  const totalExact    = Object.values(userStats).reduce((a,s)=>a+s.exact,0)
+  const totalCorrect  = Object.values(userStats).reduce((a,s)=>a+s.correct,0)
+  const nUsers        = userList.length
+  const totalPossible = nFin * nUsers
+  const pctExact      = totalPossible ? Math.round(totalExact/totalPossible*100) : 0
+  const pctCorrect    = totalPossible ? Math.round(totalCorrect/totalPossible*100) : 0
+
+  // ── cumulative para gráfico ──────────────────────────────────
+  const pickMap = {}
+  for (const pick of finPicks) pickMap[pick.user_id+':'+pick.match_id] = pick
+  const userCumulative = {}
+  for (const p of userList) {
+    let acc = 0
+    userCumulative[p.id] = finished.map(m => { acc += pickMap[p.id+':'+m.id]?.points_earned ?? 0; return acc })
+  }
+
+  // ── byMatch para histórico ───────────────────────────────────
+  const byMatch = {}
+  for (const pick of finPicks) (byMatch[pick.match_id] = byMatch[pick.match_id]||[]).push(pick)
+
+  // ── helpers ──────────────────────────────────────────────────
+  function rankTable(rows) {
     if (!rows?.length) return '<div class="empty">Sem dados ainda.</div>'
     return `
       <table class="rtable">
-        <thead><tr>
-          <th style="width:2rem">#</th>
-          <th>Participante</th>
-          <th class="tr">Pontos</th>
-        </tr></thead>
+        <thead><tr><th style="width:2rem">#</th><th>Participante</th><th class="tr">Pontos</th></tr></thead>
         <tbody>
           ${rows.map(r => {
             const isMe = r.user_id === SESSION.user.id
@@ -1325,69 +1430,267 @@ async function renderRankings() {
             </tr>`
           }).join('')}
         </tbody>
-      </table>
-    `
+      </table>`
   }
 
-  const tabs = [
-    {id:'overall', label:'Geral',   data: overall},
-    {id:'phase',   label: activePhase?.name ?? 'Fase', data: phaseRanks},
-    {id:'daily',   label:'Hoje',    data: dailyRanks},
-  ]
-
-  function renderTabs() {
-    const tab = tabs.find(t=>t.id===_rankTab) ?? tabs[0]
+  function statsTable() {
     return `
-      <div class="rtab-bar">
-        ${tabs.map(t=>`<button class="rtab ${_rankTab===t.id?'active':''}" onclick="switchRankTab('${t.id}')">${t.label}</button>`).join('')}
-      </div>
-      <div class="card">${tableHtml(tab.data)}</div>
-    `
-  }
-
-  setContent(`
-    <div class="ph"><h1>Rankings</h1></div>
-    <div id="rank-content">${renderTabs()}</div>
-  `)
-
-  window._rankData = { tabs, pMap }
-}
-
-window.switchRankTab = function(tab) {
-  _rankTab = tab
-  const { tabs, pMap } = window._rankData
-  const active = tabs.find(t=>t.id===tab)
-
-  function tableHtml(rows) {
-    if (!rows?.length) return '<div class="empty">Sem dados ainda.</div>'
-    return `
-      <table class="rtable">
-        <thead><tr><th style="width:2rem">#</th><th>Participante</th><th class="tr">Pontos</th></tr></thead>
+      <div style="overflow-x:auto">
+      <table class="htable" style="margin:0;table-layout:fixed;width:100%">
+        <colgroup><col style="width:28%"><col style="width:14%"><col style="width:22%"><col style="width:22%"><col style="width:14%"></colgroup>
+        <thead><tr>
+          <th>Participante</th>
+          <th style="text-align:center">Total pts</th>
+          <th style="text-align:center">Placar exato</th>
+          <th style="text-align:center">Vencedor certo</th>
+          <th style="text-align:center">Erro</th>
+        </tr></thead>
         <tbody>
-          ${rows.map(r => {
-            const isMe = r.user_id === SESSION.user.id
-            const posClass = r.position===1?'p1':r.position===2?'p2':r.position===3?'p3':''
-            return `<tr class="${isMe?'me':''}">
-              <td><span class="rpos ${posClass}">${r.position}º</span></td>
-              <td>${pMap?.[r.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
-              <td class="rpts tr">${r.points}</td>
+          ${userList.slice().sort((a,b)=>(userStats[b.id]?.points??0)-(userStats[a.id]?.points??0)).map(p => {
+            const s = userStats[p.id] ?? { exact:0, correct:0, wrong:0, points:0 }
+            const pEx = nFin ? Math.round(s.exact/nFin*100) : 0
+            const pOk = nFin ? Math.round(s.correct/nFin*100) : 0
+            const isMe = p.id === SESSION.user.id
+            return `<tr ${isMe?'style="background:var(--green-s)"':''}>
+              <td>${p.display_name}${isMe?' <span class="badge bg">você</span>':''}</td>
+              <td style="text-align:center;font-weight:700;color:var(--green)">${s.points}</td>
+              <td style="text-align:center"><span class="pts-ex">${s.exact}</span><span class="muted"> (${pEx}%)</span></td>
+              <td style="text-align:center"><span class="pts-ok">${s.correct}</span><span class="muted"> (${pOk}%)</span></td>
+              <td style="text-align:center" class="pts-no">${s.wrong}</td>
             </tr>`
           }).join('')}
         </tbody>
       </table>
-    `
+      </div>
+      <p style="font-size:.72rem;color:var(--t3);margin-top:.6rem">
+        Placar exato (15 pts) e Vencedor certo (3 pts) são categorias exclusivas. % sobre ${nFin} jogos finalizados.
+      </p>`
   }
 
-  document.getElementById('rank-content').innerHTML = `
-    <div class="rtab-bar">
-      ${tabs.map(t=>`<button class="rtab ${tab===t.id?'active':''}" onclick="switchRankTab('${t.id}')">${t.label}</button>`).join('')}
+  let _histFilter = 'all'
+  function histTable(filterUid) {
+    const matchIds = Object.keys(byMatch).sort((a,b)=>new Date(mMap[a]?.kickoff_at)-new Date(mMap[b]?.kickoff_at))
+    if (!matchIds.length) return '<div class="empty">Nenhum palpite registrado ainda.</div>'
+    return matchIds.map(mid => {
+      const m = mMap[mid]; if (!m) return ''
+      let rowPicks = byMatch[mid] ?? []
+      if (filterUid && filterUid !== 'all') rowPicks = rowPicks.filter(p=>p.user_id===filterUid)
+      if (!rowPicks.length) return ''
+      const kickoff = new Date(m.kickoff_at).toLocaleDateString('pt-BR',{timeZone:TZ,day:'2-digit',month:'2-digit'})
+      return `
+        <div class="card" style="margin-bottom:.6rem;padding:.75rem">
+          <div class="fb mb1">
+            <span style="font-size:.82rem;font-weight:600">${m.home_team?.name??'?'} × ${m.away_team?.name??'?'}</span>
+            <span style="font-size:.75rem;color:var(--t3)">${kickoff} · <strong style="color:var(--text)">${m.home_score}×${m.away_score}</strong></span>
+          </div>
+          <div style="overflow-x:auto">
+          <table class="htable" style="margin:0;width:100%;table-layout:fixed">
+            <colgroup><col style="width:36%"><col style="width:22%"><col style="width:24%"><col style="width:18%"></colgroup>
+            <thead><tr>
+              <th>Participante</th>
+              <th style="text-align:center">Palpite</th>
+              <th style="text-align:center">Tipo</th>
+              <th style="text-align:center">Pts</th>
+            </tr></thead>
+            <tbody>
+              ${rowPicks.slice().sort((a,b)=>b.points_earned-a.points_earned).map(pick => {
+                const isMe   = pick.user_id === SESSION.user.id
+                const isEx   = pick.pts_exact > 0
+                const isOk   = !isEx && pick.pts_correct > 0
+                const chipCl = isEx?'ex':isOk?'ok':'no'
+                const ptsCl  = isEx?'pts-ex':isOk?'pts-ok':'pts-no'
+                return `<tr ${isMe?'style="background:var(--green-s)"':''}>
+                  <td>${pMap[pick.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
+                  <td style="text-align:center"><span class="pick-chip ${chipCl}">${pick.home_score}×${pick.away_score}</span></td>
+                  <td style="text-align:center"><span class="pick-chip ${chipCl}">${isEx?'Exato':isOk?'Vencedor':'Erro'}</span></td>
+                  <td style="text-align:center;font-weight:700" class="${ptsCl}">${pick.points_earned>0?'+'+pick.points_earned:'0'}</td>
+                </tr>`
+              }).join('')}
+            </tbody>
+          </table>
+          </div>
+        </div>`
+    }).join('')
+  }
+
+  function filterHtml(uid) {
+    return `<div class="hist-filter">
+      <button class="${uid==='all'?'active':''}" onclick="switchHistFilter('all')">Todos</button>
+      ${userList.map(p=>`<button class="${uid===p.id?'active':''}" onclick="switchHistFilter('${p.id}')">${p.display_name}</button>`).join('')}
+    </div>`
+  }
+
+  // ── tabs ─────────────────────────────────────────────────────
+  const TABS = [
+    { id:'overall', label:'Geral' },
+    { id:'stats',   label:'Estatísticas' },
+    { id:'hist',    label:'Histórico' },
+  ]
+
+  function tabBar(activeId) {
+    return `<div class="rtab-bar">${TABS.map(t=>`<button class="rtab ${activeId===t.id?'active':''}" onclick="switchRankTab('${t.id}')">${t.label}</button>`).join('')}</div>`
+  }
+
+  function tabContent(id) {
+    if (id==='overall') return rankTable(overall)
+    if (id==='stats')   return `
+      <div class="stat-grid">
+        <div class="stat-box"><span class="sl">Placar exato</span><span class="sv">${pctExact}%</span><div class="ss">${totalExact} de ${nFin} jogos</div></div>
+        <div class="stat-box"><span class="sl">Vencedor certo</span><span class="sv">${pctCorrect}%</span><div class="ss">${totalCorrect} de ${nFin} jogos</div></div>
+        <div class="stat-box"><span class="sl">Jogos finalizados</span><span class="sv">${nFin}</span><div class="ss">de 104 no total</div></div>
+      </div>
+      <div class="stitle" style="margin-top:1rem">Evolução de pontos</div>
+      <div class="evo-wrap" style="cursor:grab">
+        <canvas id="evo-chart" style="width:100%;min-width:${Math.max(400,nFin*16)}px;height:220px"></canvas>
+        <div class="evo-legend" id="evo-legend"></div>
+      </div>
+      <div class="stitle" style="margin-top:1rem">Por participante</div>
+      ${statsTable()}
+    `
+    if (id==='hist')    return filterHtml('all') + `<div id="hist-content">${histTable('all')}</div>`
+    return ''
+  }
+
+  setContent(`
+    <div class="ph"><h1>Rankings</h1></div>
+    <div id="rank-content">
+      ${tabBar(_rankTab)}
+      <div class="card" id="rank-tab-body">${tabContent(_rankTab)}</div>
     </div>
-    <div class="card">${tableHtml(active?.data)}</div>
-  `
+  `)
+
+  // gráfico de evolução (só na tab stats)
+  if (_rankTab === 'stats') drawEvoChart(finished, userList, userCumulative)
+
+  window._rankData = {
+    overall,
+    pMap, userList, userStats, nFin,
+    finished, userCumulative, byMatch, mMap,
+    histTable, filterHtml, tabContent, tabBar,
+    pctExact, pctCorrect, totalExact, totalCorrect, nUsers, totalPossible,
+  }
+}
+
+window.switchRankTab = function(id) {
+  _rankTab = id
+  const d = window._rankData; if (!d) return
+  document.getElementById('rank-content').innerHTML =
+    d.tabBar(id) +
+    `<div class="card" id="rank-tab-body">${d.tabContent(id)}</div>`
+  if (id === 'stats') drawEvoChart(d.finished, d.userList, d.userCumulative)
+}
+
+window.switchHistFilter = function(uid) {
+  const d = window._rankData; if (!d) return
+  document.querySelector('.hist-filter')?.replaceWith(
+    Object.assign(document.createElement('div'),{innerHTML:d.filterHtml(uid)}).firstElementChild
+  )
+  document.getElementById('hist-content').innerHTML = d.histTable(uid)
+}
+
+const CHART_COLORS = ['#1a6b3a','#c8922a','#2980b9','#8e44ad','#e74c3c','#16a085','#d35400','#2c3e50','#27ae60','#c0392b']
+
+function drawEvoChart(finished, userList, userCumulative) {
+  requestAnimationFrame(() => {
+    const canvas = document.getElementById('evo-chart')
+    const legend = document.getElementById('evo-legend')
+    if (!canvas || !finished.length) return
+
+    const DPR = window.devicePixelRatio || 1
+    const W   = canvas.offsetWidth || 600
+    const H   = 220
+    canvas.width  = W * DPR
+    canvas.height = H * DPR
+    canvas.style.height = H + 'px'
+    const ctx = canvas.getContext('2d')
+    ctx.scale(DPR, DPR)
+
+    const PAD = { top:16, right:16, bottom:40, left:40 }
+    const chartW = W - PAD.left - PAD.right
+    const chartH = H - PAD.top  - PAD.bottom
+    const maxPts = Math.max(1, ...Object.values(userCumulative).map(arr=>arr[arr.length-1]??0))
+    const n = finished.length
+
+    const dateTicks = []
+    let lastDate = null
+    finished.forEach((m,i) => {
+      const d = new Date(m.kickoff_at).toLocaleDateString('pt-BR',{timeZone:TZ,day:'2-digit',month:'2-digit'})
+      if (d !== lastDate) { dateTicks.push({i,label:d}); lastDate=d }
+    })
+
+    let offsetX = 0, dragStart = null
+
+    function draw(off) {
+      ctx.clearRect(0,0,W,H)
+      ctx.font = '10px Inter,system-ui,sans-serif'
+      const xPos = i => PAD.left + off + (i/Math.max(n-1,1))*chartW
+      const yPos = v => PAD.top + chartH - (v/maxPts)*chartH
+
+      for (let s=0;s<=4;s++) {
+        const v = Math.round(maxPts*s/4), y = yPos(v)
+        ctx.strokeStyle='#e8e8e8'; ctx.lineWidth=1
+        ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+chartW,y); ctx.stroke()
+        ctx.fillStyle='#aaa'; ctx.textAlign='right'
+        ctx.fillText(v, PAD.left-5, y+3.5)
+      }
+
+      ctx.fillStyle='#aaa'; ctx.textAlign='center'
+      for (const tick of dateTicks) {
+        const x = xPos(tick.i)
+        if (x<PAD.left||x>PAD.left+chartW) continue
+        ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=1; ctx.setLineDash([3,3])
+        ctx.beginPath(); ctx.moveTo(x,PAD.top); ctx.lineTo(x,PAD.top+chartH); ctx.stroke()
+        ctx.setLineDash([])
+        ctx.fillText(tick.label, x, H-PAD.bottom+14)
+      }
+
+      userList.forEach((p,idx) => {
+        const color = CHART_COLORS[idx%CHART_COLORS.length]
+        const data  = userCumulative[p.id]??[]
+        const isMe  = p.id===SESSION.user.id
+        ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=isMe?2.5:1.5
+        data.forEach((v,i)=>{ const x=xPos(i),y=yPos(v); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y) })
+        ctx.stroke()
+        if (data.length) {
+          const lx=xPos(data.length-1), ly=yPos(data[data.length-1])
+          ctx.beginPath(); ctx.arc(lx,ly,isMe?4:3,0,Math.PI*2); ctx.fillStyle=color; ctx.fill()
+        }
+      })
+    }
+
+    draw(offsetX)
+
+    canvas.addEventListener('mousedown', e=>{dragStart=e.clientX; canvas.style.cursor='grabbing'})
+    window.addEventListener('mousemove', e=>{
+      if(dragStart===null) return
+      offsetX=Math.max(-(chartW*.5),Math.min(0,offsetX+e.clientX-dragStart))
+      dragStart=e.clientX; draw(offsetX)
+    })
+    window.addEventListener('mouseup', ()=>{dragStart=null; canvas.style.cursor='grab'})
+    canvas.addEventListener('touchstart',e=>{dragStart=e.touches[0].clientX},{passive:true})
+    canvas.addEventListener('touchmove',e=>{
+      if(dragStart===null) return
+      offsetX=Math.max(-(chartW*.5),Math.min(0,offsetX+e.touches[0].clientX-dragStart))
+      dragStart=e.touches[0].clientX; draw(offsetX)
+    },{passive:true})
+
+    if (legend) {
+      legend.innerHTML=''
+      userList.forEach((p,idx)=>{
+        const color=CHART_COLORS[idx%CHART_COLORS.length], isMe=p.id===SESSION.user.id
+        const li=document.createElement('div')
+        li.className='evo-item'+(isMe?' me':'')
+        li.innerHTML=`<span class="evo-dot" style="background:${color}"></span>${p.display_name}${isMe?' (você)':''}`
+        legend.appendChild(li)
+      })
+    }
+  })
 }
 
 // ════════════════════════════════════════════════════════════════
-// JOGOS
+
+// ════════════════════════════════════════════════════════════════
+// GRUPOS
 // ════════════════════════════════════════════════════════════════
 async function renderJogos() {
   loading()
@@ -1748,7 +2051,7 @@ function renderRegras() {
       <div class="card">
         <p style="font-size:.875rem;margin-bottom:.75rem">
           Antes de cada jogo, você palpita o placar. Os palpites abrem às <strong>00h01 do dia anterior</strong>
-          ao jogo e fecham às <strong>23h59 desse mesmo dia anterior</strong>. Após o prazo,
+          ao jogo e fecham <strong>1 hora antes do kickoff</strong>. Após o prazo,
           os palpites de todos ficam visíveis.
         </p>
         <p style="font-size:.875rem;margin-bottom:.75rem">
@@ -1818,7 +2121,7 @@ function renderRegras() {
           <tbody>
             ${['S','A','B','C'].map((s,i) => {
               const pos   = ['1–12','13–24','25–36','37–48'][i]
-              const price = ['12','7','4','2'][i]
+              const price = ['12','8','4','2'][i]
               const label = ['Favoritos','Competitivas','Candidatas a zebra','Zebras puras'][i]
               return `<tr style="border-bottom:1px solid var(--line)">
                 <td style="padding:.45rem 0"><span class="shelf-badge s${s}" style="font-size:.7rem">${s}</span> ${label}</td>
@@ -2011,7 +2314,135 @@ window.resetAll = async function() {
   }
 }
 
+
 // ════════════════════════════════════════════════════════════════
+// ESTATÍSTICAS
+// ════════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════════
+// ESTATÍSTICAS
+// ════════════════════════════════════════════════════════════════
+
+
+async function renderGrupos() {
+  loading()
+
+  const [
+    { data: teams },
+    { data: matches },
+  ] = await Promise.all([
+    sb.from('teams').select('id,name,code,group_name').not('group_name','is',null),
+    sb.from('matches')
+      .select('id,home_team_id,away_team_id,home_score,away_score,status,phase_id')
+      .eq('phase_id', 1)
+      .in('status', ['finished','live']),
+  ])
+
+  // times jogando ao vivo agora
+  const liveTeams = new Set()
+  for (const m of matches??[]) {
+    if (m.status === 'live') {
+      liveTeams.add(m.home_team_id)
+      liveTeams.add(m.away_team_id)
+    }
+  }
+
+  // calcula stats por time
+  const stats = {}
+  for (const t of teams??[]) {
+    stats[t.id] = { mp:0, w:0, d:0, l:0, gf:0, ga:0 }
+  }
+
+  for (const m of matches??[]) {
+    if (m.home_score === null || m.away_score === null) continue
+    const h = stats[m.home_team_id]
+    const a = stats[m.away_team_id]
+    if (!h || !a) continue
+
+    h.mp++; a.mp++
+    h.gf += m.home_score; h.ga += m.away_score
+    a.gf += m.away_score; a.ga += m.home_score
+
+    if (m.home_score > m.away_score)      { h.w++; a.l++ }
+    else if (m.home_score < m.away_score) { h.l++; a.w++ }
+    else                                  { h.d++; a.d++ }
+  }
+
+  // agrupa por grupo
+  const byGroup = {}
+  for (const t of teams??[]) {
+    const g = t.group_name
+    if (!byGroup[g]) byGroup[g] = []
+    const s = stats[t.id]
+    const pts = s.w*3 + s.d
+    const gd  = s.gf - s.ga
+    byGroup[g].push({ ...t, ...s, pts, gd })
+  }
+
+  // ordena cada grupo: pts desc, gd desc, gf desc, nome asc
+  for (const g of Object.keys(byGroup)) {
+    byGroup[g].sort((a,b) =>
+      b.pts - a.pts || b.gd - a.gd || b.gf - a.gf || a.name.localeCompare(b.name)
+    )
+  }
+
+
+
+  function groupTable(grpLetter, rows) {
+    const allDone = rows.every(r => r.mp === 3)
+    const hasLive = rows.some(r => liveTeams.has(r.id))
+    return `
+      <div class="grp-card">
+        <div class="grp-hd">GRUPO ${grpLetter}${hasLive ? ' <span class="live-dot"></span>' : ''}</div>
+        <table class="grp-table">
+          <thead><tr>
+            <th>Time</th>
+            <th title="Jogos">J</th>
+            <th title="Vitórias">V</th>
+            <th title="Empates">E</th>
+            <th title="Derrotas">D</th>
+            <th title="Gols feitos">GF</th>
+            <th title="Gols sofridos">GS</th>
+            <th title="Saldo de gols">SG</th>
+            <th title="Pontos">Pts</th>
+          </tr></thead>
+          <tbody>
+            ${rows.map((r,i) => {
+              const isLive = liveTeams.has(r.id)
+              const rowCls = isLive ? 'live-row' : (allDone && i < 2 ? 'qualified' : '')
+              return `<tr class="${rowCls}">
+                <td><div class="grp-team">
+                  <span class="grp-pos">${i+1}</span>
+                  ${flag(r.code, 20)}
+                  <span>${r.name}${isLive ? ' <span class="live-dot"></span>' : ''}</span>
+                </div></td>
+                <td>${r.mp}</td>
+                <td>${r.w}</td>
+                <td>${r.d}</td>
+                <td>${r.l}</td>
+                <td>${r.gf}</td>
+                <td>${r.ga}</td>
+                <td>${r.gd > 0 ? '+'+r.gd : r.gd}</td>
+                <td class="grp-pts">${r.pts}</td>
+              </tr>`
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `
+  }
+
+  const groupLetters = Object.keys(byGroup).sort()
+
+  setContent(`
+    <div class="ph"><h1>Grupos</h1><p>Classificação da fase de grupos — Copa 2026</p></div>
+    ${groupLetters.map(g => groupTable(g, byGroup[g] ?? [])).join('')}
+    <p class="muted" style="font-size:.72rem;margin-top:.5rem">
+      Verde = classificado (após 3 jogos) · Laranja = jogo em andamento · J V E D GF GS SG Pts
+    </p>
+  `)
+}
+
 // REALTIME — atualiza placar dos jogos em tempo real
 // ════════════════════════════════════════════════════════════════
 sb.channel('matches-live')
@@ -2019,6 +2450,7 @@ sb.channel('matches-live')
     const hash = window.location.hash.replace('#','')
     if (hash === 'dashboard') renderDashboard()
     if (hash === 'jogos')     renderJogos()
+    if (hash === 'grupos')    renderGrupos()
   })
   .subscribe()
 
@@ -2069,7 +2501,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v1.0.14
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.0.0
 </div>
 
 <script>
