@@ -1393,12 +1393,15 @@ async function renderRankings() {
     if (pick.pts_exact === 0 && pick.pts_correct === 0) s.wrong++
   }
 
-  const totalExact    = Object.values(userStats).reduce((a,s)=>a+s.exact,0)
-  const totalCorrect  = Object.values(userStats).reduce((a,s)=>a+s.correct,0)
-  const nUsers        = userList.length
-  const totalPossible = nFin * nUsers
-  const pctExact      = totalPossible ? Math.round(totalExact/totalPossible*100) : 0
-  const pctCorrect    = totalPossible ? Math.round(totalCorrect/totalPossible*100) : 0
+  // cards de visão geral: calcula direto do pointsLog do usuário logado
+  const myLog = (pointsLog??[]).filter(pl => pl.user_id === SESSION.user.id && finishedIds.has(pl.match_id))
+  const myExact   = myLog.filter(pl => pl.event_type === 'exact_score').length
+  const myCorrect = myLog.filter(pl => pl.event_type === 'correct_winner').length
+  const myPoints  = myLog.reduce((a,pl)=>a+pl.points, 0)
+  const myWrong   = nFin - myExact - myCorrect
+  const myStats   = { exact:myExact, correct:myCorrect, wrong:Math.max(0,myWrong), points:myPoints }
+  const pctExact   = nFin ? Math.round(myStats.exact/nFin*100)   : 0
+  const pctCorrect = nFin ? Math.round(myStats.correct/nFin*100) : 0
 
   // ── cumulative para gráfico ──────────────────────────────────
   const pickMap = {}
@@ -1535,8 +1538,8 @@ async function renderRankings() {
     if (id==='overall') return rankTable(overall)
     if (id==='stats')   return `
       <div class="stat-grid">
-        <div class="stat-box"><span class="sl">Placar exato</span><span class="sv">${pctExact}%</span><div class="ss">${totalExact} de ${nFin} jogos</div></div>
-        <div class="stat-box"><span class="sl">Vencedor certo</span><span class="sv">${pctCorrect}%</span><div class="ss">${totalCorrect} de ${nFin} jogos</div></div>
+        <div class="stat-box"><span class="sl">Placar exato</span><span class="sv">${pctExact}%</span><div class="ss">${myStats.exact} de ${nFin} jogos</div></div>
+        <div class="stat-box"><span class="sl">Vencedor certo</span><span class="sv">${pctCorrect}%</span><div class="ss">${myStats.correct} de ${nFin} jogos</div></div>
         <div class="stat-box"><span class="sl">Jogos finalizados</span><span class="sv">${nFin}</span><div class="ss">de 104 no total</div></div>
       </div>
       <div class="stitle" style="margin-top:1rem">Evolução de pontos</div>
@@ -1567,7 +1570,7 @@ async function renderRankings() {
     pMap, userList, userStats, nFin,
     finished, userCumulative, byMatch, mMap,
     histTable, filterHtml, tabContent, tabBar,
-    pctExact, pctCorrect, totalExact, totalCorrect, nUsers, totalPossible,
+    pctExact, pctCorrect, myStats,
   }
 }
 
