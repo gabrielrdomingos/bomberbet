@@ -211,6 +211,8 @@ select.fi{cursor:pointer}
 .grp-table tr:last-child td{border-bottom:none}
 .grp-table tr.qualified td{background:var(--green-s)}
 .grp-table tr.qualified td:first-child{border-left:3px solid var(--green)}
+.grp-table tr.qualified-third td{background:#fdf3e3}
+.grp-table tr.qualified-third td:first-child{border-left:3px solid var(--gold)}
 .grp-table tr.live-row td{background:#fff8f0}
 .grp-table tr.live-row td:first-child{border-left:3px solid var(--gold)}
 .grp-pts{font-weight:700;color:var(--text)}
@@ -227,6 +229,39 @@ select.fi{cursor:pointer}
 .bracket-team+.bracket-team{border-top:1px solid var(--line)}
 .bracket-team.tbd{color:var(--t3);font-style:italic}
 .bracket-team.qualified{background:var(--green-s);font-weight:600}
+
+/* ── chave mata-mata ─────────────────────────────────────────── */
+#view-chaveamento{background:#0d1f14;min-height:100vh;padding:1rem 0 3rem}
+.chave-header{text-align:center;padding:1rem 0 1.5rem}
+.chave-header h1{font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:.08em;text-transform:uppercase}
+.chave-header p{font-size:.72rem;color:#c8922a;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:.15rem}
+.chave-wrap{display:grid;grid-template-columns:1fr auto 1fr;gap:0;max-width:700px;margin:0 auto;padding:0 .5rem}
+.chave-side{display:flex;flex-direction:column;gap:0}
+.chave-center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding:0 .5rem;min-width:60px}
+.chave-round-label{font-size:.55rem;font-weight:700;color:#c8922a;text-transform:uppercase;letter-spacing:.08em;text-align:center;margin:.5rem 0 .25rem}
+.chave-col{display:flex;flex-direction:column}
+.chave-match{background:#1a2e1f;border:1px solid #2d4a33;border-radius:5px;overflow:hidden;margin:.2rem 0}
+.chave-match.winner-decided{border-color:#c8922a}
+.chave-team{display:flex;align-items:center;gap:.35rem;padding:.35rem .5rem;font-size:.72rem;font-weight:500;color:#ccc;position:relative}
+.chave-team+.chave-team{border-top:1px solid #2d4a33}
+.chave-team.winner{background:#1f3d27;color:#fff;font-weight:700}
+.chave-team.winner::after{content:"✓";position:absolute;right:.4rem;font-size:.6rem;color:#4caf50}
+.chave-team.tbd{color:#4a6b52;font-style:italic;font-size:.65rem}
+.chave-score{position:absolute;right:1.5rem;font-size:.7rem;font-weight:700;color:#c8922a}
+.chave-connector{flex:1;display:flex;align-items:center}
+.chave-line-v{width:1px;background:#2d4a33;flex:1}
+.chave-line-h{height:1px;background:#2d4a33;width:6px}
+.chave-trophy{font-size:2rem;text-align:center;line-height:1}
+.chave-final-box{background:#1a2e1f;border:2px solid #c8922a;border-radius:6px;overflow:hidden;min-width:110px}
+.chave-final-team{display:flex;align-items:center;gap:.35rem;padding:.4rem .6rem;font-size:.75rem;font-weight:600;color:#fff}
+.chave-final-team+.chave-final-team{border-top:1px solid #c8922a}
+.chave-final-team.tbd{color:#4a6b52;font-style:italic}
+.chave-phase-title{font-size:.6rem;font-weight:700;color:#c8922a;text-transform:uppercase;letter-spacing:.1em;text-align:center;padding:.25rem 0;background:#0d1f14;border-bottom:1px solid #2d4a33}
+@media(max-width:480px){
+  .chave-team{font-size:.65rem;padding:.3rem .4rem}
+  .chave-wrap{padding:0 .25rem}
+  .chave-center{min-width:45px;padding:0 .25rem}
+}
 
 /* ── estatísticas ────────────────────────────────────────────── */
 .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.65rem;margin-bottom:1.5rem}
@@ -417,11 +452,13 @@ const ROUTES = {
   rankings:  renderRankings,
   jogos:     renderJogos,
   grupos:    renderGrupos,
+  chave:     renderChave,
   regras:    renderRegras,
   admin:     renderAdmin,
 }
 
 function nav(route) {
+  clearInterval(window._chaveInterval)
   window.location.hash = route
 }
 window.nav = nav
@@ -474,6 +511,7 @@ function renderNavbar(active) {
     {r:'rankings',  label:'Rankings'},
     {r:'jogos',     label:'Jogos'},
     {r:'grupos',    label:'Grupos'},
+    {r:'chave',     label:'Chave'},
     {r:'regras',    label:'Regras'},
     ...(PROFILE?.is_admin ? [{r:'admin',label:'Admin',adm:true}] : []),
     {r:'_signout',  label:'Sair'},
@@ -515,8 +553,12 @@ function teamName(m, side, withFlag=true, layout='flag-left') {
 }
 
 function matchScoreHtml(m) {
-  if (m.status === 'finished')
-    return `<div class="mscore"><span class="mscore-num">${m.home_score}</span><span class="x">×</span><span class="mscore-num">${m.away_score}</span></div>`
+  if (m.status === 'finished') {
+    const hasPen = m.home_score_pen != null && m.away_score_pen != null
+    const hPen = hasPen ? `<span style="font-size:.65rem;color:var(--t3);font-weight:400">(${m.home_score_pen})</span>` : ''
+    const aPen = hasPen ? `<span style="font-size:.65rem;color:var(--t3);font-weight:400">(${m.away_score_pen})</span>` : ''
+    return `<div class="mscore"><span class="mscore-num">${m.home_score}</span>${hPen}<span class="x">×</span>${aPen}<span class="mscore-num">${m.away_score}</span></div>`
+  }
   if (m.home_score != null && m.away_score != null)
     return `<div class="mscore" style="color:var(--gold)"><span class="mscore-num">${m.home_score}</span><span class="x" style="color:var(--t3)">×</span><span class="mscore-num">${m.away_score}</span></div>`
   return `<div class="mscore pend">${fmtTime(m.kickoff_at)}</div>`
@@ -1100,7 +1142,7 @@ async function savePick(matchId) {
 async function renderMercado() {
   loading()
 
-  const { data: phaseArr } = await sb.from('phases').select('id,name,market_opens_at,market_closes_at').eq('status','active').limit(1)
+  const { data: phaseArr } = await sb.from('phases').select('id,name,order_index,market_opens_at,market_closes_at').eq('status','active').limit(1)
   const phase = phaseArr?.[0] ?? null
 
   if (!phase) {
@@ -1110,6 +1152,10 @@ async function renderMercado() {
 
   const marketClosed = phase.market_closes_at && expired(phase.market_closes_at)
 
+  // fase anterior
+  const { data: prevPhaseArr } = await sb.from('phases').select('id,name,order_index').eq('order_index', (phase.order_index ?? 1) - 1).limit(1)
+  const prevPhase = prevPhaseArr?.[0] ?? null
+
   const [
     { data: teams },
     { data: prices },
@@ -1117,22 +1163,89 @@ async function renderMercado() {
     { data: allBought },
     { data: balance },
     { data: profiles },
+    { data: prevPurchases },
+    { data: prevPhaseRanking },
+    { data: prevTeamPts },
+    { data: prevCoins },
+    { data: prevPrices },
   ] = await Promise.all([
     sb.from('teams').select('id,name,code,shelf,ordinal_rank,eliminated').order('ordinal_rank'),
     sb.from('team_prices').select('team_id,price').eq('phase_id',phase.id),
     sb.from('team_purchases').select('team_id,price_paid').eq('user_id',SESSION.user.id).eq('phase_id',phase.id),
     marketClosed ? sb.from('team_purchases').select('team_id,user_id').eq('phase_id',phase.id) : Promise.resolve({data:[]}),
     sb.from('user_coin_balance').select('remaining_coins,total_coins,spent_coins').eq('user_id',SESSION.user.id).eq('phase_id',phase.id).single(),
-    marketClosed ? sb.from('profiles').select('id,display_name') : Promise.resolve({data:[]}),
+    sb.from('profiles').select('id,display_name'),
+    prevPhase ? sb.from('team_purchases').select('team_id,user_id').eq('phase_id',prevPhase.id) : Promise.resolve({data:[]}),
+    prevPhase ? sb.from('ranking_phase').select('user_id,points').eq('phase_id',prevPhase.id) : Promise.resolve({data:[]}),
+    prevPhase ? sb.from('points_log').select('user_id,points').eq('phase_id',prevPhase.id).eq('event_type','team_advance') : Promise.resolve({data:[]}),
+    prevPhase ? sb.from('user_coin_balance').select('user_id,variable_coins,total_coins').eq('phase_id',phase.id) : Promise.resolve({data:[]}),
+    prevPhase ? sb.from('team_prices').select('team_id,price').eq('phase_id',prevPhase.id) : Promise.resolve({data:[]}),
   ])
 
-  const priceMap   = Object.fromEntries((prices??[]).map(p=>[p.team_id,p.price]))
+  const priceMap   = Object.fromEntries((prices??[]).map(p=>[p.team_id,parseInt(p.price)]))
   const boughtSet  = new Set((myBought??[]).map(b=>b.team_id))
   const remaining  = balance?.remaining_coins ?? 24
   const total      = balance?.total_coins ?? 24
   const spent      = balance?.spent_coins ?? 0
   const teamMap    = Object.fromEntries((teams??[]).map(t=>[t.id,t]))
   const profileMap = Object.fromEntries((profiles??[]).map(p=>[p.id,p.display_name]))
+  const prevPriceMap = Object.fromEntries((prevPrices??[]).map(p=>[p.team_id,parseInt(p.price)]))
+  const myCoinsEarned = (prevCoins??[]).find(c=>c.user_id===SESSION.user.id)?.variable_coins ?? 0
+
+  // ── dados da fase anterior ────────────────────────────────
+  let prevRetroHtml = ''
+  if (prevPhase && profiles?.length) {
+    // picks por usuário na fase anterior
+    const prevByUser = {}
+    for (const p of prevPurchases??[]) {
+      ;(prevByUser[p.user_id] = prevByUser[p.user_id]||[]).push(p.team_id)
+    }
+    // pontos camada 2 (palpites)
+    const prevC2Map = Object.fromEntries((prevPhaseRanking??[]).map(r=>[r.user_id, r.points]))
+    // pontos camada 1 (mercado) — direto do points_log (duplicatas já corrigidas no banco)
+    const prevC1Raw = {}
+    for (const pl of prevTeamPts??[]) {
+      prevC1Raw[pl.user_id] = (prevC1Raw[pl.user_id]||0) + pl.points
+    }
+    const prevC1Map = Object.fromEntries(Object.entries(prevC1Raw).map(([uid,pts])=>[uid, pts]))
+    // moedas ganhas (variable_coins desta fase = bônus gerado pela fase anterior)
+    const prevCoinsMap = Object.fromEntries((prevCoins??[]).map(c=>[c.user_id, c.variable_coins]))
+
+    const usersWithData = profiles.filter(p => prevByUser[p.id]?.length)
+    if (usersWithData.length) {
+      prevRetroHtml = `
+        <div class="sec">
+          <div class="stitle">Fase anterior — ${prevPhase.name}</div>
+          ${usersWithData.map(p => {
+            const isMe = p.id === SESSION.user.id
+            const picks = (prevByUser[p.id]||[]).map(tid => teamMap[tid]).filter(Boolean)
+            const c2 = prevC2Map[p.id] ?? 0
+            const c1 = prevC1Map[p.id] ?? 0
+            const coins = prevCoinsMap[p.id] ?? 0
+            return `
+              <div class="card" style="margin-bottom:.5rem${isMe ? ';border-color:var(--green)' : ''}">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+                  <span style="font-size:.82rem;font-weight:700">${isMe ? 'Você' : p.display_name}</span>
+                  <span style="font-size:.75rem;color:var(--t3)">${picks.length} seleções</span>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:.25rem;margin-bottom:.6rem">
+                  ${picks.map(t => `
+                    <span style="display:inline-flex;align-items:center;gap:.2rem;font-size:.75rem;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:.15rem .4rem">
+                      ${flag(t.code, 20)} ${t.name}
+                      <span class="shelf-badge s${t.shelf}" style="font-size:.55rem;padding:.1rem .25rem">${t.shelf}</span>
+                      ${t.eliminated ? '<span style="font-size:.6rem;color:var(--red)">✗</span>' : '<span style="font-size:.6rem;color:var(--green)">✓</span>'}
+                    </span>`).join('')}
+                </div>
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+                  <span style="font-size:.72rem;background:var(--green-s);color:var(--green);border-radius:4px;padding:.2rem .5rem;font-weight:600">🎯 Palpites: ${c2} pts</span>
+                  <span style="font-size:.72rem;background:var(--gold-s);color:var(--gold);border-radius:4px;padding:.2rem .5rem;font-weight:600">🏆 Mercado: ${c1} pts</span>
+                  <span style="font-size:.72rem;background:#f0f0f0;color:var(--t2);border-radius:4px;padding:.2rem .5rem;font-weight:600">🪙 Bônus fase atual: +${coins} moedas</span>
+                </div>
+              </div>`
+          }).join('')}
+        </div>`
+    }
+  }
 
   const shelves = ['S','A','B','C']
   const shelfLabels = {S:'⭐ S — Favoritos',A:'A — Competitivos',B:'B — Candidatas a zebra',C:'C — Zebras puras'}
@@ -1149,6 +1262,7 @@ async function renderMercado() {
     B: `${advancePts.B[phaseIdx]} pts se avançar`,
     C: `${advancePts.C[phaseIdx]} pts se avançar`,
   }
+  const prevPhaseIdx = phaseIdx - 1
 
   // ── minhas seleções no topo ───────────────────────────────
   const myTeams = [...boughtSet].map(id => teamMap[id]).filter(Boolean)
@@ -1199,14 +1313,25 @@ async function renderMercado() {
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem;margin-bottom:1rem">
         ${ts.map(t => {
-          const price    = priceMap[t.id] ?? (s==='S'?12:s==='A'?7:s==='B'?4:2)
+          const price    = parseInt(priceMap[t.id] ?? (s==='S'?12:s==='A'?7:s==='B'?4:2))
           const isBought = boughtSet.has(t.id)
           const cls      = t.eliminated ? 'elim' : isBought ? 'bought' : ''
+          const prevPrice = prevPriceMap[t.id] ?? null
+          const priceDiff = prevPrice !== null ? price - prevPrice : null
+          const diffTag = priceDiff !== null && priceDiff !== 0
+            ? ` <span style="font-size:.62rem;color:${priceDiff>0?'#c0392b':'#27ae60'};font-weight:600">(${priceDiff>0?'↑':'↓'}${Math.abs(priceDiff)})</span>`
+            : ''
+          const currPts = advancePts[s][phaseIdx]
+          const prevPts = prevPhaseIdx >= 0 ? advancePts[s][prevPhaseIdx] : null
+          const ptsDiff = prevPts !== null ? currPts - prevPts : null
+          const ptsDiffTag = ptsDiff !== null && ptsDiff !== 0
+            ? ` <span style="font-size:.58rem;color:${ptsDiff>0?'var(--green)':'var(--red)'}">(${ptsDiff>0?'↑':'↓'}${Math.abs(ptsDiff)}pts)</span>`
+            : ''
           const priceTag = isBought
             ? `<span style="font-size:.65rem;color:var(--green)">✓</span>`
             : t.eliminated
             ? `<span style="font-size:.65rem;color:var(--t3)">—</span>`
-            : `<span style="font-size:.72rem;font-weight:700;color:var(--green)">${price}🪙</span>`
+            : `<span style="font-size:.68rem;font-weight:700;color:var(--green)">${price}🪙${diffTag}</span>`
           return `
             <div class="tcard ${cls}" id="tc-${t.id}"
                  onclick="toggleTeam(${t.id},${price})"
@@ -1219,21 +1344,22 @@ async function renderMercado() {
       </div>`
   }).join('')
 
+  const coinsEarnedHtml = (prevPhase && myCoinsEarned > 0)
+    ? '<div style="font-size:.78rem;color:var(--t2);background:var(--gold-s);border:1px solid var(--gold);border-radius:var(--r);padding:.5rem .85rem;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem">🪙 <span>Você ganhou <strong>+' + myCoinsEarned + ' moedas</strong> pela sua performance na ' + prevPhase.name + '</span></div>'
+    : ''
+
+  const marketStatusHtml = marketClosed
+    ? '<div class="card" style="margin-bottom:1rem;background:var(--gold-s);border-color:var(--gold)"><span style="font-size:.85rem;color:var(--gold)">🔒 Mercado encerrado para esta fase.</span></div>'
+    : coinsEarnedHtml + '<div class="bbar"><div><div class="blabel">Saldo disponível</div><div class="bval" id="balance-val">' + remaining + ' <span style="font-size:.8rem;font-weight:400;color:var(--t3)">/ ' + total + ' moedas</span></div></div><button class="btn btn-p" id="buy-btn" onclick="confirmPurchases()">Confirmar compras</button></div>'
+
   setContent(`
     <div class="ph">
       <h1>Mercado</h1>
       <p>${phase.name}${phase.market_closes_at ? ` · Prazo: ${fmtDate(phase.market_closes_at)} ${fmtTime(phase.market_closes_at)}` : ''}</p>
     </div>
 
-    ${marketClosed ? `<div class="card" style="margin-bottom:1rem;background:var(--gold-s);border-color:var(--gold)"><span style="font-size:.85rem;color:var(--gold)">🔒 Mercado encerrado para esta fase.</span></div>` : `
-    <div class="bbar">
-      <div>
-        <div class="blabel">Saldo disponível</div>
-        <div class="bval" id="balance-val">${remaining} <span style="font-size:.8rem;font-weight:400;color:var(--t3)">/ ${total} moedas</span></div>
-      </div>
-      <button class="btn btn-p" id="buy-btn" onclick="confirmPurchases()">Confirmar compras</button>
-    </div>`}
-
+    ${marketStatusHtml}
+    ${prevRetroHtml}
     ${mySelHtml}
     ${allPicksHtml}
     <div id="pending-sel"></div>
@@ -1346,16 +1472,24 @@ async function renderRankings() {
     { data: profiles },
     { data: picks },
     { data: pointsLog },
+    { data: teamsList },
+    { data: phaseRanking },
+    { data: phasesAll },
     { data: matches },
+    { data: allPurchases },
   ] = await Promise.all([
     sb.from('ranking_overall').select('user_id,points,position').order('position'),
     sb.from('profiles').select('id,display_name'),
     sb.from('match_picks').select('user_id,match_id,home_score,away_score'),
-    sb.from('points_log').select('user_id,match_id,points,event_type'),
+    sb.from('points_log').select('user_id,match_id,team_id,phase_id,points,event_type'),
+    sb.from('teams').select('id,name,code,shelf'),
+    sb.from('ranking_phase').select('user_id,phase_id,points'),
+    sb.from('phases').select('id,name,order_index').order('order_index'),
     sb.from('matches')
       .select('id,kickoff_at,home_score,away_score,status,home_team:home_team_id(name),away_team:away_team_id(name)')
       .eq('status','finished')
       .order('kickoff_at'),
+    sb.from('team_purchases').select('user_id,team_id,phase_id'),
   ])
 
   const pMap    = Object.fromEntries((profiles??[]).map(p=>[p.id,p.display_name]))
@@ -1364,10 +1498,31 @@ async function renderRankings() {
   const nFin    = finished.length
   const mMap    = Object.fromEntries(finished.map(m=>[m.id,m]))
   const finishedIds = new Set(finished.map(m=>m.id))
+  const teamMap = Object.fromEntries((teamsList??[]).map(t=>[t.id,t]))
+  const phaseMap = Object.fromEntries((phasesAll??[]).map(p=>[p.id,p]))
 
-  // ── pontos por pick (via points_log) ────────────────────────
+  // ── pontos mercado (Camada 1) por usuário e por fase ────────
+  const mktPtsByUser = {}   // uid -> total pts mercado
+  const mktPtsByUserPhase = {}  // uid -> { phaseId -> pts }
+  const mktAdvances = []    // lista de avanços para histórico
+  for (const pl of pointsLog??[]) {
+    if (pl.event_type !== 'team_advance') continue
+    mktPtsByUser[pl.user_id] = (mktPtsByUser[pl.user_id]||0) + pl.points
+    if (!mktPtsByUserPhase[pl.user_id]) mktPtsByUserPhase[pl.user_id] = {}
+    mktPtsByUserPhase[pl.user_id][pl.phase_id] = (mktPtsByUserPhase[pl.user_id][pl.phase_id]||0) + pl.points
+    mktAdvances.push(pl)
+  }
+
+  // pontos camada 2 por usuário (via ranking_phase somado)
+  const c2ByUser = {}
+  for (const r of phaseRanking??[]) {
+    c2ByUser[r.user_id] = (c2ByUser[r.user_id]||0) + r.points
+  }
+
+  // ── pontos por pick (via points_log) — apenas eventos de jogo ─
   const plIdx = {}
   for (const pl of pointsLog??[]) {
+    if (!pl.match_id) continue  // ignora team_advance (match_id null)
     const key = pl.user_id+':'+pl.match_id
     if (!plIdx[key]) plIdx[key] = { exact_count:0, correct_count:0, total_pts:0 }
     if (pl.event_type === 'exact_score')    plIdx[key].exact_count++
@@ -1383,33 +1538,55 @@ async function renderRankings() {
     })
 
   // ── stats por usuário ────────────────────────────────────────
+  // pts palpites = ranking_phase (fonte de verdade do banco)
+  // exatos/vencedores/erros = contagem via points_log (único lugar com esse detalhe)
   const userStats = {}
-  for (const p of userList) userStats[p.id] = { exact:0, correct:0, wrong:0, points:0 }
+  for (const p of userList) userStats[p.id] = { exact:0, correct:0, wrong:0, points: c2ByUser[p.id] ?? 0 }
   for (const pick of finPicks) {
     const s = userStats[pick.user_id]; if (!s) continue
-    s.points += pick.points_earned
     s.exact   += pick.pts_exact
     s.correct += pick.pts_correct
     if (pick.pts_exact === 0 && pick.pts_correct === 0) s.wrong++
   }
 
-  // cards de visão geral: calcula direto do pointsLog do usuário logado
-  const myLog = (pointsLog??[]).filter(pl => pl.user_id === SESSION.user.id && finishedIds.has(pl.match_id))
+  // stats do usuário logado
+  const myLog = (pointsLog??[]).filter(pl => pl.user_id === SESSION.user.id && pl.match_id)
   const myExact   = myLog.filter(pl => pl.event_type === 'exact_score').length
   const myCorrect = myLog.filter(pl => pl.event_type === 'correct_winner').length
-  const myPoints  = myLog.reduce((a,pl)=>a+pl.points, 0)
   const myWrong   = nFin - myExact - myCorrect
-  const myStats   = { exact:myExact, correct:myCorrect, wrong:Math.max(0,myWrong), points:myPoints }
+  // pts palpites do usuário logado = ranking_phase (fonte de verdade)
+  const myPalpites = c2ByUser[SESSION.user.id] ?? 0
+  const myStats   = { exact:myExact, correct:myCorrect, wrong:Math.max(0,myWrong), points:myPalpites }
   const pctExact   = nFin ? Math.round(myStats.exact/nFin*100)   : 0
   const pctCorrect = nFin ? Math.round(myStats.correct/nFin*100) : 0
 
   // ── cumulative para gráfico ──────────────────────────────────
+  // pontos de mercado da fase 1 são somados como salto no primeiro jogo da fase 2
+  const FIRST_PHASE2_MATCH_ID = 75
   const pickMap = {}
   for (const pick of finPicks) pickMap[pick.user_id+':'+pick.match_id] = pick
+  // pts de palpites acumulados por jogo (fonte: points_log por match)
+  // pts de mercado entram como salto no primeiro jogo da fase 2
   const userCumulative = {}
   for (const p of userList) {
     let acc = 0
-    userCumulative[p.id] = finished.map(m => { acc += pickMap[p.id+':'+m.id]?.points_earned ?? 0; return acc })
+    let mktAdded = false
+    userCumulative[p.id] = finished.map(m => {
+      if (!mktAdded && m.id === FIRST_PHASE2_MATCH_ID) {
+        acc += mktPtsByUser[p.id] ?? 0
+        mktAdded = true
+      }
+      acc += pickMap[p.id+':'+m.id]?.points_earned ?? 0
+      return acc
+    })
+    // se o jogo 75 ainda não está em finished, adicionar ponto extra ao final com mercado
+    if (!finished.find(m=>m.id===FIRST_PHASE2_MATCH_ID)) {
+      const mkt = mktPtsByUser[p.id] ?? 0
+      if (mkt > 0) {
+        const last = userCumulative[p.id][userCumulative[p.id].length-1] ?? 0
+        userCumulative[p.id] = [...userCumulative[p.id], last + mkt]
+      }
+    }
   }
 
   // ── byMatch para histórico ───────────────────────────────────
@@ -1440,23 +1617,33 @@ async function renderRankings() {
     return `
       <div style="overflow-x:auto">
       <table class="htable" style="margin:0;table-layout:fixed;width:100%">
-        <colgroup><col style="width:28%"><col style="width:14%"><col style="width:22%"><col style="width:22%"><col style="width:14%"></colgroup>
+        <colgroup><col style="width:24%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:13%"><col style="width:12%"><col style="width:12%"></colgroup>
         <thead><tr>
           <th>Participante</th>
-          <th style="text-align:center">Total pts</th>
-          <th style="text-align:center">Placar exato</th>
-          <th style="text-align:center">Vencedor certo</th>
+          <th style="text-align:center">Palpites</th>
+          <th style="text-align:center">Mercado</th>
+          <th style="text-align:center">Total</th>
+          <th style="text-align:center">Exato</th>
+          <th style="text-align:center">Vencedor</th>
           <th style="text-align:center">Erro</th>
         </tr></thead>
         <tbody>
-          ${userList.slice().sort((a,b)=>(userStats[b.id]?.points??0)-(userStats[a.id]?.points??0)).map(p => {
+          ${userList.slice().sort((a,b)=>{
+            const totB = (overall??[]).find(r=>r.user_id===b.id)?.points ?? 0
+            const totA = (overall??[]).find(r=>r.user_id===a.id)?.points ?? 0
+            return totB - totA
+          }).map(p => {
             const s = userStats[p.id] ?? { exact:0, correct:0, wrong:0, points:0 }
+            const c1 = mktPtsByUser[p.id] ?? 0
+            const tot = (overall??[]).find(r=>r.user_id===p.id)?.points ?? (s.points + c1)
             const pEx = nFin ? Math.round(s.exact/nFin*100) : 0
             const pOk = nFin ? Math.round(s.correct/nFin*100) : 0
             const isMe = p.id === SESSION.user.id
             return `<tr ${isMe?'style="background:var(--green-s)"':''}>
               <td>${p.display_name}${isMe?' <span class="badge bg">você</span>':''}</td>
-              <td style="text-align:center;font-weight:700;color:var(--green)">${s.points}</td>
+              <td style="text-align:center;color:var(--green);font-weight:600">${s.points}</td>
+              <td style="text-align:center;color:var(--gold);font-weight:600">${c1}</td>
+              <td style="text-align:center;font-weight:700">${tot}</td>
               <td style="text-align:center"><span class="pts-ex">${s.exact}</span><span class="muted"> (${pEx}%)</span></td>
               <td style="text-align:center"><span class="pts-ok">${s.correct}</span><span class="muted"> (${pOk}%)</span></td>
               <td style="text-align:center" class="pts-no">${s.wrong}</td>
@@ -1466,7 +1653,7 @@ async function renderRankings() {
       </table>
       </div>
       <p style="font-size:.72rem;color:var(--t3);margin-top:.6rem">
-        Placar exato (15 pts) e Vencedor certo (3 pts) são categorias exclusivas. % sobre ${nFin} jogos finalizados.
+        Palpites = acertos nos jogos · Mercado = avanço de seleções · Exato (15 pts) e Vencedor (3 pts) são exclusivos. % sobre ${nFin} jogos finalizados.
       </p>`
   }
 
@@ -1540,6 +1727,9 @@ async function renderRankings() {
       <div class="stat-grid">
         <div class="stat-box"><span class="sl">Placar exato</span><span class="sv">${pctExact}%</span><div class="ss">${myStats.exact} de ${nFin} jogos</div></div>
         <div class="stat-box"><span class="sl">Vencedor certo</span><span class="sv">${pctCorrect}%</span><div class="ss">${myStats.correct} de ${nFin} jogos</div></div>
+        <div class="stat-box"><span class="sl">Palpites</span><span class="sv">${myStats.points}</span><div class="ss">pts</div></div>
+        <div class="stat-box"><span class="sl">Mercado</span><span class="sv">${mktPtsByUser[SESSION.user.id]??0}</span><div class="ss">pts</div></div>
+        <div class="stat-box"><span class="sl">Total geral</span><span class="sv">${(overall??[]).find(r=>r.user_id===SESSION.user.id)?.points ?? (myStats.points+(mktPtsByUser[SESSION.user.id]??0))}</span><div class="ss">mercado + palpites</div></div>
         <div class="stat-box"><span class="sl">Jogos finalizados</span><span class="sv">${nFin}</span><div class="ss">de 104 no total</div></div>
       </div>
       <div class="stitle" style="margin-top:1rem">Evolução de pontos</div>
@@ -1550,7 +1740,77 @@ async function renderRankings() {
       <div class="stitle" style="margin-top:1rem">Por participante</div>
       ${statsTable()}
     `
-    if (id==='hist')    return filterHtml('all') + `<div id="hist-content">${histTable('all')}</div>`
+    if (id==='hist') {
+      // histórico de avanços de mercado por fase
+      // índice de pontos ganhos por usuário+time+fase
+      const advPtsIdx = {}
+      for (const pl of mktAdvances) {
+        advPtsIdx[pl.user_id+':'+pl.team_id+':'+pl.phase_id] = pl.points
+      }
+      const phaseIds = [...new Set((allPurchases??[]).map(p=>p.phase_id))].sort((a,b)=>a-b)
+      const mktHistHtml = phaseIds.length ? phaseIds.map(pid => {
+        const phName = phaseMap[pid]?.name ?? `Fase ${pid}`
+        // por time: quem comprou e quanto ganhou
+        const byTeam = {}
+        for (const pur of (allPurchases??[]).filter(p=>p.phase_id===pid)) {
+          const tid = pur.team_id
+          if (!byTeam[tid]) byTeam[tid] = { buyers: [] }
+          const pts = advPtsIdx[pur.user_id+':'+tid+':'+pid] ?? 0
+          byTeam[tid].buyers.push({ uid: pur.user_id, pts })
+        }
+        const teamIds = Object.keys(byTeam).filter(tid=>byTeam[tid].buyers.length)
+        if (!teamIds.length) return ''
+        teamIds.sort((a,b) => {
+          const maxA = Math.max(...byTeam[a].buyers.map(x=>x.pts))
+          const maxB = Math.max(...byTeam[b].buyers.map(x=>x.pts))
+          return maxB - maxA
+        })
+        return `
+          <div class="card" style="margin-bottom:.6rem;padding:.75rem">
+            <div class="fb mb1">
+              <span style="font-size:.82rem;font-weight:700;color:var(--gold)">🏆 ${phName}</span>
+            </div>
+            <div style="overflow-x:auto">
+            <table class="htable" style="margin:0;width:100%;table-layout:fixed">
+              <colgroup><col style="width:30%"><col style="width:15%"><col style="width:55%"></colgroup>
+              <thead><tr>
+                <th>Seleção</th>
+                <th style="text-align:center">Prat.</th>
+                <th style="text-align:center">Compradores</th>
+              </tr></thead>
+              <tbody>
+                ${teamIds.map(tid => {
+                  const t = teamMap[parseInt(tid)]
+                  if (!t) return ''
+                  const buyers = byTeam[tid].buyers
+                  const advanced = buyers.some(b=>b.pts>0)
+                  return `<tr style="${advanced?'':'opacity:.5'}">
+                    <td>${flag(t.code,20)} ${t.name}</td>
+                    <td style="text-align:center"><span class="shelf-badge s${t.shelf}">${t.shelf}</span></td>
+                    <td style="text-align:center;font-size:.78rem">
+                      ${buyers.map(b => {
+                        const isMe = b.uid === SESSION.user.id
+                        const name = isMe ? 'Você' : (pMap[b.uid]??'?')
+                        const ptsColor = b.pts > 0 ? 'var(--gold)' : 'var(--t3)'
+                        const ptsLabel = b.pts > 0 ? '+'+b.pts+'pts' : '0pts'
+                        return `<span style="display:inline-block;margin:.1rem .2rem;padding:.1rem .35rem;border-radius:4px;background:${isMe?'var(--green-s)':'var(--bg)'};border:1px solid ${isMe?'var(--green)':'var(--line)'};font-weight:${isMe?'700':'400'}">${name} <span style="color:${ptsColor};font-weight:700">${ptsLabel}</span></span>`
+                      }).join('')}
+                    </td>
+                  </tr>`
+                }).join('')}
+              </tbody>
+            </table>
+            </div>
+          </div>`
+      }).join('') : '<div class="empty">Nenhum avanço de seleção registrado ainda.</div>'
+
+      return `
+        <div class="stitle">Palpites por jogo</div>
+        ${filterHtml('all')}<div id="hist-content">${histTable('all')}</div>
+        <div class="stitle" style="margin-top:1.5rem">Mercado — avanços de seleções</div>
+        ${mktHistHtml}
+      `
+    }
     return ''
   }
 
@@ -1569,6 +1829,7 @@ async function renderRankings() {
     overall,
     pMap, userList, userStats, nFin,
     finished, userCumulative, byMatch, mMap,
+    teamMap, phaseMap, mktPtsByUser, mktAdvances, allPurchases,
     histTable, filterHtml, tabContent, tabBar,
     pctExact, pctCorrect, myStats,
   }
@@ -1612,7 +1873,7 @@ function drawEvoChart(finished, userList, userCumulative) {
     const chartW = W - PAD.left - PAD.right
     const chartH = H - PAD.top  - PAD.bottom
     const maxPts = Math.max(1, ...Object.values(userCumulative).map(arr=>arr[arr.length-1]??0))
-    const n = finished.length
+    const n = Math.max(finished.length, ...Object.values(userCumulative).map(a=>a.length))
 
     const dateTicks = []
     let lastDate = null
@@ -1699,7 +1960,7 @@ async function renderJogos() {
   loading()
 
   const { data: matches } = await sb.from('matches')
-    .select('id,kickoff_at,status,phase_id,is_knockout,home_score,away_score,placeholder_home,placeholder_away,home_team:home_team_id(name,code),away_team:away_team_id(name,code)')
+    .select('id,kickoff_at,status,phase_id,is_knockout,home_score,away_score,home_score_pen,away_score_pen,placeholder_home,placeholder_away,home_team:home_team_id(name,code),away_team:away_team_id(name,code)')
     .order('kickoff_at')
 
   const { data: phases } = await sb.from('phases').select('id,name,order_index').order('order_index')
@@ -1751,10 +2012,10 @@ async function renderAdmin() {
     { data: finishedMatches },
   ] = phase ? await Promise.all([
     sb.from('matches')
-      .select('id,kickoff_at,home_score,away_score,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away,is_knockout')
+      .select('id,kickoff_at,home_score,away_score,home_score_pen,away_score_pen,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away,is_knockout')
       .eq('phase_id', phase.id).neq('status','finished').order('kickoff_at'),
     sb.from('matches')
-      .select('id,kickoff_at,home_score,away_score,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away,is_knockout')
+      .select('id,kickoff_at,home_score,away_score,home_score_pen,away_score_pen,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away,is_knockout')
       .eq('phase_id', phase.id).eq('status','finished').order('kickoff_at'),
   ]) : [{ data: [] }, { data: [] }]
 
@@ -1785,8 +2046,8 @@ async function renderAdmin() {
                 <option value="${m.id}" data-ko="${m.is_knockout}" data-force="true"
                   data-hid="${m.home_team?.id??''}" data-hn="${teamName(m,'home',false)}"
                   data-aid="${m.away_team?.id??''}" data-an="${teamName(m,'away',false)}"
-                  data-hs="${m.home_score}" data-as="${m.away_score}">
-                  ${fmtDate(m.kickoff_at)} ${fmtTime(m.kickoff_at)} · ${teamName(m,'home',false)} ${m.home_score}×${m.away_score} ${teamName(m,'away',false)} ✓
+                  data-hs="${m.home_score}" data-as="${m.away_score}" data-hpen="${m.home_score_pen??''}" data-apen="${m.away_score_pen??''}">
+                  ${fmtDate(m.kickoff_at)} ${fmtTime(m.kickoff_at)} · ${teamName(m,'home',false)} ${m.home_score}×${m.away_score}${m.home_score_pen!=null?' ('+m.home_score_pen+'×'+m.away_score_pen+' pen)':''} ${teamName(m,'away',false)} ✓
                 </option>`).join('')}
             </optgroup>
           </select>
@@ -1815,11 +2076,11 @@ async function renderAdmin() {
 
         <div id="adm-ko-section" class="hidden">
           <div class="fg">
-            <label class="fl">Placar aos 90min</label>
+            <label class="fl">Placar dos pênaltis <span style="font-size:.72rem;color:var(--t3)">(só se empate)</span></label>
             <div class="fb gap1">
-              <input class="fi" type="number" min="0" id="adm-h90" placeholder="0">
+              <input class="fi" type="number" min="0" id="adm-hpen" placeholder="—">
               <span style="padding:.5rem">×</span>
-              <input class="fi" type="number" min="0" id="adm-a90" placeholder="0">
+              <input class="fi" type="number" min="0" id="adm-apen" placeholder="—">
             </div>
           </div>
           <div class="fg">
@@ -1897,6 +2158,8 @@ window.adminMatchChanged = function() {
   // always pre-fill current scores from dataset (works for both pending and finished)
   document.getElementById('adm-hs2').value = opt.dataset.hs ?? ''
   document.getElementById('adm-as2').value = opt.dataset.as ?? ''
+  if (document.getElementById('adm-hpen')) document.getElementById('adm-hpen').value = opt.dataset.hpen ?? ''
+  if (document.getElementById('adm-apen')) document.getElementById('adm-apen').value = opt.dataset.apen ?? ''
   if (force) {
     document.getElementById('adm-correction-notice').classList.remove('hidden')
   } else {
@@ -1934,13 +2197,15 @@ window.submitResult = async function(finalize=false) {
   }
 
   if (isKO) {
-    const h90 = document.getElementById('adm-h90').value
-    const a90 = document.getElementById('adm-a90').value
-    const wid = document.getElementById('adm-winner').value
-    if (finalize && (h90===''||a90===''||!wid)) { err('Preencha placar 90min e quem avançou para finalizar.'); return }
-    if (h90!=='') payload.home_score_90 = parseInt(h90)
-    if (a90!=='') payload.away_score_90 = parseInt(a90)
-    if (wid)      payload.winner_team_id = parseInt(wid)
+    const hpen = document.getElementById('adm-hpen').value
+    const apen = document.getElementById('adm-apen').value
+    const wid  = document.getElementById('adm-winner').value
+    const isDraw = parseInt(hs) === parseInt(as)
+    if (finalize && !wid) { err('Selecione quem avançou para finalizar.'); return }
+    if (finalize && isDraw && (hpen===''||apen==='')) { err('Empate: preencha o placar dos pênaltis.'); return }
+    if (hpen!=='') payload.home_score_pen = parseInt(hpen)
+    if (apen!=='') payload.away_score_pen = parseInt(apen)
+    if (wid)       payload.winner_team_id = parseInt(wid)
   }
 
   const { data: { session } } = await sb.auth.getSession()
@@ -1964,8 +2229,8 @@ window.clearMatchResult = async function() {
     status:         'scheduled',
     home_score:     null,
     away_score:     null,
-    home_score_90:  null,
-    away_score_90:  null,
+    home_score_pen: null,
+    away_score_pen: null,
     winner_team_id: null,
     result_source:  null,
     result_set_at:  null,
@@ -2325,6 +2590,178 @@ window.resetAll = async function() {
 // ════════════════════════════════════════════════════════════════
 // ESTATÍSTICAS
 // ════════════════════════════════════════════════════════════════
+// CHAVEAMENTO
+// ════════════════════════════════════════════════════════════════
+async function renderChave() {
+  loading()
+
+  const { data: matches } = await sb.from('matches')
+    .select('id,phase_id,home_score,away_score,home_score_pen,away_score_pen,status,winner_team_id,home_team:home_team_id(id,name,code),away_team:away_team_id(id,name,code),placeholder_home,placeholder_away')
+    .in('phase_id',[2,3,4,5,6])
+    .order('kickoff_at')
+
+  const mMap = Object.fromEntries((matches??[]).map(m=>[m.id,m]))
+
+  function teamInfo(match, side) {
+    const t = side==='home' ? match?.home_team : match?.away_team
+    if (t) return t
+    return { name:'?', code:null, id:null }
+  }
+
+  // Estrutura do bracket (IDs do banco, de fora para dentro)
+  const LEFT_ROUNDS  = [
+    [76,79,75,77,85,86,83,84], // 16avos
+    [93,91,97,95],              // oitavas
+    [101,99],                   // quartas
+    [103],                      // semi
+  ]
+  const RIGHT_ROUNDS = [
+    [78,80,81,82,87,90,88,89], // 16avos
+    [94,96,98,92],              // oitavas
+    [100,102],                  // quartas
+    [104],                      // semi
+  ]
+  const FINAL = 106, TERCEIRO = 105
+
+  // Dimensoes
+  const CW=80, CH=48, TH=24, GAP=12, RGAP=20, PAD=10, LABEL_H=18
+
+  // Cores BomberBET
+  const GREEN='#1a6b3a',GREENS='#e8f5ee',GOLD='#c8922a',LINE='#c8c8c8',TEXT='#1a1a1a',T3='#999',WHITE='#fff',BG='#e0e0e0'
+
+  function calcPos(rounds) {
+    const pos=[]
+    pos.push(rounds[0].map((_,i)=>i*(CH+GAP)))
+    for(let r=1;r<rounds.length;r++){
+      const prev=pos[r-1],curr=[]
+      for(let i=0;i<rounds[r].length;i++) curr.push((prev[i*2]+prev[i*2+1])/2)
+      pos.push(curr)
+    }
+    return pos
+  }
+  const lPos=calcPos(LEFT_ROUNDS), rPos=calcPos(RIGHT_ROUNDS)
+
+  const sideRounds=LEFT_ROUNDS.length
+  const sideW=sideRounds*(CW+RGAP)
+  const centerW=CW+24
+  const totalW=sideW*2+centerW
+  const dataH=LEFT_ROUNDS[0].length*(CH+GAP)-GAP
+  const totalH=dataH+PAD*2+LABEL_H+20
+  const oY=PAD+LABEL_H
+
+  function lX(r){return PAD+r*(CW+RGAP)}
+  function rX(r){return totalW-PAD-CW-r*(CW+RGAP)}
+
+  function teamRow(t,win,x,y,w){
+    const lbl=t&&t.code?t.code:'?'
+    const tc=win?GREEN:(t&&t.code?TEXT:T3)
+    const bg=win?GREENS:WHITE
+    const flagH=TH-4, flagW=Math.round((TH-4)*1.5), flagY=y+2, flagX=x+3
+    const textX=t&&t.code?flagX+flagW+3:x+3
+    let s='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+TH+'" fill="'+bg+'"/>'
+    if(t&&t.code){
+      const iso=_flagMap[t.code.toUpperCase()]??(t.code.toLowerCase())
+      s+='<image href="https://flagcdn.com/w20/'+iso+'.png" x="'+flagX+'" y="'+flagY+'" width="'+flagW+'" height="'+flagH+'" preserveAspectRatio="xMidYMid meet"/>'
+    }
+    s+='<text x="'+textX+'" y="'+(y+TH/2+4.5)+'" font-size="9" font-family="Inter,system-ui,sans-serif" font-weight="'+(win?700:500)+'" fill="'+tc+'">'+lbl+'</text>'
+    return s
+  }
+
+  function matchCard(id,x,y,w){
+    const m=mMap[id]
+    const h=teamInfo(m,'home'),a=teamInfo(m,'away')
+    const done=m?.status==='finished'
+    const wid=m?.winner_team_id
+    const hW=done&&wid!=null&&wid===h?.id
+    const aW=done&&wid!=null&&wid===a?.id
+    const hS=done&&m.home_score!=null?String(m.home_score):''
+    const aS=done&&m.away_score!=null?String(m.away_score):''
+    const hasPen=done&&m.home_score_pen!=null&&m.away_score_pen!=null
+    const hP=hasPen?'('+m.home_score_pen+')':''
+    const aP=hasPen?'('+m.away_score_pen+')':''
+    const bc=done?GOLD:LINE
+    // largura reservada para placar: score (2 chars max) + pen (4 chars max) + padding
+    const scoreW=hasPen?28:14
+    const teamW=w-scoreW-4
+    let s='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+CH+'" rx="3" fill="'+WHITE+'" stroke="'+bc+'" stroke-width="1.2"/>'
+    s+=teamRow(h,hW,x,y,teamW)
+    s+='<line x1="'+x+'" y1="'+(y+TH)+'" x2="'+(x+w)+'" y2="'+(y+TH)+'" stroke="'+LINE+'" stroke-width="0.8"/>'
+    s+=teamRow(a,aW,x,y+TH,teamW)
+    if(done){
+      // placar home
+      s+='<text x="'+(x+w-2)+'" y="'+(y+TH/2+3.5)+'" font-size="8.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="'+GOLD+'" text-anchor="end">'+hS+(hasPen?' '+hP:'')+'</text>'
+      // placar away
+      s+='<text x="'+(x+w-2)+'" y="'+(y+TH+TH/2+3.5)+'" font-size="8.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="'+GOLD+'" text-anchor="end">'+aS+(hasPen?' '+aP:'')+'</text>'
+    }
+    return s
+  }
+
+  function connectors(posFrom,posTo,xFrom,xTo,side){
+    let s=''
+    const xM=side==='L'?xFrom+CW+RGAP/2:xFrom-RGAP/2
+    const xA=side==='L'?xFrom+CW:xFrom
+    const xB=side==='L'?xTo:xTo+CW
+    for(let i=0;i<posTo.length;i++){
+      const y1=posFrom[i*2]+CH/2,y2=posFrom[i*2+1]+CH/2,yM=posTo[i]+CH/2
+      s+='<polyline points="'+xA+','+y1+' '+xM+','+y1+' '+xM+','+y2+' '+xA+','+y2+'" fill="none" stroke="'+LINE+'" stroke-width="1"/>'
+      s+='<line x1="'+xM+'" y1="'+yM+'" x2="'+xB+'" y2="'+yM+'" stroke="'+LINE+'" stroke-width="1"/>'
+    }
+    return s
+  }
+
+  let svg=''
+  const lbls=['16 avos','Oitavas','Quartas','Semis']
+  lbls.forEach((l,r)=>{
+    svg+='<text x="'+(lX(r)+CW/2)+'" y="'+(PAD+10)+'" font-size="6" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="'+T3+'" text-anchor="middle">'+l+'</text>'
+    svg+='<text x="'+(rX(r)+CW/2)+'" y="'+(PAD+10)+'" font-size="6" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="'+T3+'" text-anchor="middle">'+l+'</text>'
+  })
+
+  for(let r=0;r<LEFT_ROUNDS.length;r++){
+    LEFT_ROUNDS[r].forEach((id,i)=>{ svg+=matchCard(id,lX(r),oY+lPos[r][i],CW) })
+    if(r<LEFT_ROUNDS.length-1) svg+=connectors(lPos[r].map(p=>p+oY),lPos[r+1].map(p=>p+oY),lX(r),lX(r+1),'L')
+  }
+  for(let r=0;r<RIGHT_ROUNDS.length;r++){
+    RIGHT_ROUNDS[r].forEach((id,i)=>{ svg+=matchCard(id,rX(r),oY+rPos[r][i],CW) })
+    if(r<RIGHT_ROUNDS.length-1) svg+=connectors(rPos[r].map(p=>p+oY),rPos[r+1].map(p=>p+oY),rX(r),rX(r+1),'R')
+  }
+
+  // Final e 3o lugar
+  const cx=sideW+(centerW-CW)/2
+  const fY=oY+dataH/2-CH-8
+  const tY=fY+CH+16
+  const lSX=lX(3)+CW, lSY=oY+lPos[3][0]+CH/2
+  const rSX=rX(3),    rSY=oY+rPos[3][0]+CH/2
+  const fcx=cx+CW/2
+
+  // linhas semi → final (tracejadas douradas)
+  svg+='<polyline points="'+lSX+','+lSY+' '+(cx)+','+lSY+' '+(cx)+','+(fY+CH/2)+'" fill="none" stroke="'+GOLD+'" stroke-width="0.75" stroke-dasharray="3,2"/>'
+  svg+='<polyline points="'+rSX+','+rSY+' '+(cx+CW)+','+rSY+' '+(cx+CW)+','+(fY+CH/2)+'" fill="none" stroke="'+GOLD+'" stroke-width="0.75" stroke-dasharray="3,2"/>'
+
+  svg+='<text x="'+fcx+'" y="'+(fY-4)+'" font-size="6.5" font-family="Inter,system-ui,sans-serif" font-weight="700" fill="'+GOLD+'" text-anchor="middle">FINAL</text>'
+  svg+=matchCard(FINAL,cx,fY,CW)
+  svg+='<text x="'+fcx+'" y="'+(tY-4)+'" font-size="6" font-family="Inter,system-ui,sans-serif" font-weight="600" fill="'+T3+'" text-anchor="middle">3º LUGAR</text>'
+  svg+=matchCard(TERCEIRO,cx,tY,CW)
+
+  const svgH=Math.max(totalH,tY+CH+PAD+oY)
+
+  setContent(
+    '<div class="ph"><h1>Chaveamento</h1><p>Copa do Mundo 2026</p></div>'+
+    '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">'+
+    '<svg viewBox="0 0 '+totalW+' '+svgH+'" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;min-width:320px;background:'+BG+';border-radius:8px;border:1px solid '+LINE+'">'+
+    svg+
+    '</svg></div>'
+  )
+
+  // polling de atualização a cada 30s enquanto na aba chave
+  clearInterval(window._chaveInterval)
+  window._chaveInterval = setInterval(() => {
+    if (window.location.hash.replace('#','') === 'chave') renderChave()
+    else clearInterval(window._chaveInterval)
+  }, 15000)
+}
+
+
+// ════════════════════════════════════════════════════════════════
 
 
 async function renderGrupos() {
@@ -2338,7 +2775,7 @@ async function renderGrupos() {
     sb.from('matches')
       .select('id,home_team_id,away_team_id,home_score,away_score,status,phase_id')
       .eq('phase_id', 1)
-      .in('status', ['finished','live']),
+      .eq('status', 'finished'),
   ])
 
   // times jogando ao vivo agora
@@ -2391,6 +2828,8 @@ async function renderGrupos() {
 
 
 
+  const BEST_THIRDS = new Set([91, 80, 69, 79, 73, 84, 93, 61])
+
   function groupTable(grpLetter, rows) {
     const allDone = rows.every(r => r.mp === 3)
     const hasLive = rows.some(r => liveTeams.has(r.id))
@@ -2412,7 +2851,8 @@ async function renderGrupos() {
           <tbody>
             ${rows.map((r,i) => {
               const isLive = liveTeams.has(r.id)
-              const rowCls = isLive ? 'live-row' : (allDone && i < 2 ? 'qualified' : '')
+              const isBestThird = allDone && i === 2 && BEST_THIRDS.has(r.id)
+              const rowCls = isLive ? 'live-row' : (allDone && i < 2 ? 'qualified' : (isBestThird ? 'qualified-third' : ''))
               return `<tr class="${rowCls}">
                 <td><div class="grp-team">
                   <span class="grp-pos">${i+1}</span>
@@ -2441,7 +2881,7 @@ async function renderGrupos() {
     <div class="ph"><h1>Grupos</h1><p>Classificação da fase de grupos — Copa 2026</p></div>
     ${groupLetters.map(g => groupTable(g, byGroup[g] ?? [])).join('')}
     <p class="muted" style="font-size:.72rem;margin-top:.5rem">
-      Verde = classificado (após 3 jogos) · Laranja = jogo em andamento · J V E D GF GS SG Pts
+      Verde = classificado · Dourado = melhor 3º lugar classificado
     </p>
   `)
 }
@@ -2453,7 +2893,8 @@ sb.channel('matches-live')
     const hash = window.location.hash.replace('#','')
     if (hash === 'dashboard') renderDashboard()
     if (hash === 'jogos')     renderJogos()
-    if (hash === 'grupos')    renderGrupos()
+    if (hash === 'chave')     renderChave()
+    // grupos não atualiza em tempo real — fase encerrada
   })
   .subscribe()
 
@@ -2504,7 +2945,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.0.0
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.2.9
 </div>
 
 <script>
