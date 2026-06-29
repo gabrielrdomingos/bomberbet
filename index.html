@@ -901,7 +901,7 @@ async function loadPicksModal() {
 
         const koExtra = m.is_knockout ? `
           <div class="qrow">
-            <select class="qsel" id="q-${m.id}" ${!open?'disabled':''}>
+            <select class="qsel" id="q-${m.id}" ${!open?'disabled':''} onchange="autoSavePick(${m.id})">
               <option value="">Quem avança?</option>
               ${m.home_team ? `<option value="${m.home_team.id}" ${qid==m.home_team.id?'selected':''}>${m.home_team.name}</option>` : ''}
               ${m.away_team ? `<option value="${m.away_team.id}" ${qid==m.away_team.id?'selected':''}>${m.away_team.name}</option>` : ''}
@@ -1041,7 +1041,7 @@ async function renderPalpites() {
 
           const koExtra = m.is_knockout ? `
             <div class="qrow">
-              <select class="qsel" id="q-${m.id}" ${!open?'disabled':''}>
+              <select class="qsel" id="q-${m.id}" ${!open?'disabled':''} onchange="autoSavePick(${m.id})">
                 <option value="">Quem avança?</option>
                 ${m.home_team ? `<option value="${m.home_team.id}" ${qid==m.home_team.id?'selected':''}>${m.home_team.name}</option>` : ''}
                 ${m.away_team ? `<option value="${m.away_team.id}" ${qid==m.away_team.id?'selected':''}>${m.away_team.name}</option>` : ''}
@@ -1480,7 +1480,7 @@ async function renderRankings() {
   ] = await Promise.all([
     sb.from('ranking_overall').select('user_id,points,position').order('position'),
     sb.from('profiles').select('id,display_name'),
-    sb.from('match_picks').select('user_id,match_id,home_score,away_score'),
+    sb.from('match_picks').select('user_id,match_id,home_score,away_score,qualifier_team_id'),
     sb.from('points_log').select('user_id,match_id,team_id,phase_id,points,event_type'),
     sb.from('teams').select('id,name,code,shelf'),
     sb.from('ranking_phase').select('user_id,phase_id,points'),
@@ -1524,17 +1524,18 @@ async function renderRankings() {
   for (const pl of pointsLog??[]) {
     if (!pl.match_id) continue  // ignora team_advance (match_id null)
     const key = pl.user_id+':'+pl.match_id
-    if (!plIdx[key]) plIdx[key] = { exact_count:0, correct_count:0, total_pts:0 }
-    if (pl.event_type === 'exact_score')    plIdx[key].exact_count++
-    if (pl.event_type === 'correct_winner') plIdx[key].correct_count++
+    if (!plIdx[key]) plIdx[key] = { exact_count:0, correct_count:0, qualifier_count:0, total_pts:0 }
+    if (pl.event_type === 'exact_score')        plIdx[key].exact_count++
+    if (pl.event_type === 'correct_winner')     plIdx[key].correct_count++
+    if (pl.event_type === 'correct_qualifier')  plIdx[key].qualifier_count++
     plIdx[key].total_pts += pl.points
   }
 
   const finPicks = (picks??[])
     .filter(p => finishedIds.has(p.match_id))
     .map(p => {
-      const e = plIdx[p.user_id+':'+p.match_id] ?? { exact_count:0, correct_count:0, total_pts:0 }
-      return { ...p, pts_exact:e.exact_count, pts_correct:e.correct_count, points_earned:e.total_pts }
+      const e = plIdx[p.user_id+':'+p.match_id] ?? { exact_count:0, correct_count:0, qualifier_count:0, total_pts:0 }
+      return { ...p, pts_exact:e.exact_count, pts_correct:e.correct_count, pts_qualifier:e.qualifier_count, points_earned:e.total_pts }
     })
 
   // ── stats por usuário ────────────────────────────────────────
@@ -1545,15 +1546,18 @@ async function renderRankings() {
   for (const pick of finPicks) {
     const s = userStats[pick.user_id]; if (!s) continue
     s.exact   += pick.pts_exact
-    s.correct += pick.pts_correct
-    if (pick.pts_exact === 0 && pick.pts_correct === 0) s.wrong++
+    // "vencedor certo" = correct_winner (grupos) OU correct_qualifier (KO)
+    s.correct += pick.pts_correct + pick.pts_qualifier
+    if (pick.pts_exact === 0 && pick.pts_correct === 0 && pick.pts_qualifier === 0) s.wrong++
   }
 
   // stats do usuário logado
   const myLog = (pointsLog??[]).filter(pl => pl.user_id === SESSION.user.id && pl.match_id)
-  const myExact   = myLog.filter(pl => pl.event_type === 'exact_score').length
-  const myCorrect = myLog.filter(pl => pl.event_type === 'correct_winner').length
-  const myWrong   = nFin - myExact - myCorrect
+  const myExact     = myLog.filter(pl => pl.event_type === 'exact_score').length
+  const myWinner    = myLog.filter(pl => pl.event_type === 'correct_winner').length
+  const myQualifier = myLog.filter(pl => pl.event_type === 'correct_qualifier').length
+  const myCorrect   = myWinner + myQualifier
+  const myWrong     = nFin - myExact - myWinner - myQualifier
   // pts palpites do usuário logado = ranking_phase (fonte de verdade)
   const myPalpites = c2ByUser[SESSION.user.id] ?? 0
   const myStats   = { exact:myExact, correct:myCorrect, wrong:Math.max(0,myWrong), points:myPalpites }
@@ -1675,24 +1679,39 @@ async function renderRankings() {
           </div>
           <div style="overflow-x:auto">
           <table class="htable" style="margin:0;width:100%;table-layout:fixed">
-            <colgroup><col style="width:36%"><col style="width:22%"><col style="width:24%"><col style="width:18%"></colgroup>
+            <colgroup><col style="width:28%"><col style="width:16%"><col style="width:18%"><col style="width:24%"><col style="width:14%"></colgroup>
             <thead><tr>
               <th>Participante</th>
-              <th style="text-align:center">Palpite</th>
+              <th style="text-align:center">Placar</th>
+              <th style="text-align:center">Avança</th>
               <th style="text-align:center">Tipo</th>
               <th style="text-align:center">Pts</th>
             </tr></thead>
             <tbody>
               ${rowPicks.slice().sort((a,b)=>b.points_earned-a.points_earned).map(pick => {
                 const isMe   = pick.user_id === SESSION.user.id
+                const isKO   = m.is_knockout
                 const isEx   = pick.pts_exact > 0
-                const isOk   = !isEx && pick.pts_correct > 0
-                const chipCl = isEx?'ex':isOk?'ok':'no'
-                const ptsCl  = isEx?'pts-ex':isOk?'pts-ok':'pts-no'
+                const isWin  = pick.pts_correct > 0
+                const isQual = pick.pts_qualifier > 0
+                // label: combinações
+                let label, chipCl, ptsCl
+                if (isEx && (isWin || isQual)) { label='Exato+Vencedor'; chipCl='ex'; ptsCl='pts-ex' }
+                else if (isEx)                 { label='Exato';          chipCl='ex'; ptsCl='pts-ex' }
+                else if (isWin || isQual)      { label='Vencedor';       chipCl='ok'; ptsCl='pts-ok' }
+                else                           { label='Erro';           chipCl='no'; ptsCl='pts-no' }
+                // qualifier escolhido pelo palpite
+                let qualName = '—'
+                if (isKO && pick.qualifier_team_id) {
+                  if (m.home_team?.id === pick.qualifier_team_id) qualName = m.home_team.code
+                  else if (m.away_team?.id === pick.qualifier_team_id) qualName = m.away_team.code
+                }
+                const qualCorrect = isQual ? '✓' : (isKO && pick.qualifier_team_id ? '✗' : '')
                 return `<tr ${isMe?'style="background:var(--green-s)"':''}>
                   <td>${pMap[pick.user_id]??'?'}${isMe?' <span class="badge bg">você</span>':''}</td>
                   <td style="text-align:center"><span class="pick-chip ${chipCl}">${pick.home_score}×${pick.away_score}</span></td>
-                  <td style="text-align:center"><span class="pick-chip ${chipCl}">${isEx?'Exato':isOk?'Vencedor':'Erro'}</span></td>
+                  <td style="text-align:center;font-size:.78rem">${isKO?qualName+' '+qualCorrect:'—'}</td>
+                  <td style="text-align:center"><span class="pick-chip ${chipCl}">${label}</span></td>
                   <td style="text-align:center;font-weight:700" class="${ptsCl}">${pick.points_earned>0?'+'+pick.points_earned:'0'}</td>
                 </tr>`
               }).join('')}
@@ -2952,7 +2971,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.3.1
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.3.3
 </div>
 
 <script>
