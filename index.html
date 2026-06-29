@@ -2660,8 +2660,15 @@ async function renderChave() {
     const textX=t&&t.code?flagX+flagW+3:x+3
     let s='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+TH+'" fill="'+bg+'"/>'
     if(t&&t.code){
-      const iso=_flagMap[t.code.toUpperCase()]??(t.code.toLowerCase())
-      s+='<image href="https://flagcdn.com/w20/'+iso+'.png" x="'+flagX+'" y="'+flagY+'" width="'+flagW+'" height="'+flagH+'" preserveAspectRatio="xMidYMid meet"/>'
+      const cc=t.code.toUpperCase()
+      const emoji=IS_MOBILE?_emojiMap[cc]:null
+      if(emoji){
+        // emoji centralizado no espaço da bandeira
+        s+='<text x="'+(flagX+flagW/2)+'" y="'+(y+TH/2+flagH/3)+'" font-size="'+(flagH)+'" text-anchor="middle" dominant-baseline="middle">'+emoji+'</text>'
+      } else {
+        const iso=_flagMap[cc]??(t.code.toLowerCase())
+        s+='<image href="https://flagcdn.com/w20/'+iso+'.png" x="'+flagX+'" y="'+flagY+'" width="'+flagW+'" height="'+flagH+'" preserveAspectRatio="xMidYMid meet"/>'
+      }
     }
     s+='<text x="'+textX+'" y="'+(y+TH/2+4.5)+'" font-size="9" font-family="Inter,system-ui,sans-serif" font-weight="'+(win?700:500)+'" fill="'+tc+'">'+lbl+'</text>'
     return s
@@ -2945,7 +2952,7 @@ sb.channel('rankings-live')
 
 <!-- copyright -->
 <div style="text-align:center;padding:1.5rem 1rem 2rem;font-size:11px;color:var(--t3);letter-spacing:.03em">
-  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.3.0
+  Copyright &copy; Gabriel Domingos 2026 &nbsp;&middot;&nbsp; v2.3.1
 </div>
 
 <script>
